@@ -1,0 +1,28 @@
+service: bertly
+plugins:
+  - serverless-python-requirements
+  - serverless-wsgi
+custom:
+  wsgi:
+    app: bertly.app
+    packRequirements: false
+  pythonRequirements:
+    dockerizePip: true
+package:
+  exclude:
+    - node_modules/**
+    - venv/**
+provider:
+  name: aws
+  runtime: python2.7
+  stage: dev
+  region: us-east-1
+  profile: serverless
+functions:
+  app:
+    handler: wsgi.handler
+    environment:
+      COMPOSE_REDIS_URL: ${ssm:bertly-redis-url}
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'
