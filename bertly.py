@@ -1,8 +1,12 @@
 #
+# Mostly from
 # https://pythonhosted.org/shorten/user/examples.html
 #
+# Deployment template from
+# https://github.com/alexdebrie/serverless-flask
 
 import redis
+import os
 from flask import Flask, request, redirect, url_for
 from flask import jsonify as _jsonify
 from shorten import RedisStore, NamespacedFormatter, UUIDTokenGenerator
@@ -12,7 +16,12 @@ from rfc3987 import parse
 from werkzeug import iri_to_uri
 from urlparse import urlparse
 
-compose_redis_url = os.environ['COMPOSE_REDIS_URL']
+app = Flask(__name__)
+
+## COMPOSE_REDIS_URL: A complete access URL for a Redis instance
+compose_redis_url = os.environ.get('COMPOSE_REDIS_URL')
+if not compose_redis_url:
+    app.logger.error("No Redis URL")
 
 ssl_wanted=compose_redis_url.startswith("rediss:")
 parsed = urlparse(compose_redis_url)
@@ -27,13 +36,6 @@ redis_client = redis.StrictRedis(
 formatter = NamespacedFormatter('shorten')
 token_gen = UUIDTokenGenerator()
 
-store = RedisStore(redis_client=redis_client,
-    min_length=3,
-    counter_key='shorten:counter_key',
-    formatter=formatter,
-    token_gen=token_gen,
-    alphabet=alphabets.URLSAFE_DISSIMILAR)
-
 def jsonify(obj, status_code=200):
     obj['status'] = 'error' if 'error' in obj else 'okay'
     res = _jsonify(obj)
@@ -45,7 +47,12 @@ def valid_url(url):
 
 ###########################################################
 
-app = Flask(__name__)
+store = RedisStore(redis_client=redis_client,
+    min_length=3,
+    counter_key='shorten:counter_key',
+    formatter=formatter,
+    token_gen=token_gen,
+    alphabet=alphabets.URLSAFE_DISSIMILAR)
 
 @app.route('/', methods=['POST'])
 def shorten():
