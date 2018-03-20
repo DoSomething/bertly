@@ -7,7 +7,7 @@ custom:
     app: bertly.app
     packRequirements: false
   pythonRequirements:
-    dockerizePip: true
+    dockerizePip: false
 package:
   exclude:
     - node_modules/**
@@ -22,7 +22,7 @@ functions:
   app:
     handler: wsgi.handler
     environment:
-      COMPOSE_REDIS_URL: ${ssm:bertly-redis-url}
+      COMPOSE_REDIS_URL: '${ssm:bertly-redis-url}'
     events:
       - http: ANY /
       - http: 'ANY {proxy+}'
