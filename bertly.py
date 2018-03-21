@@ -1,9 +1,18 @@
-#
-# Mostly from
-# https://pythonhosted.org/shorten/user/examples.html
-#
-# Deployment template from
-# https://github.com/alexdebrie/serverless-flask
+# -*- coding: utf-8 -*-
+"""
+    package.module
+    ~~~~~~~~~~~~~~
+
+    A URL shortener service, mostly from
+    Mostly from https://pythonhosted.org/shorten/user/examples.html
+
+    Serverless deployment template from
+    https://github.com/alexdebrie/serverless-flask
+
+    Setup details: see INSTALL.md
+
+    :license: MIT, see LICENSE for details
+"""
 
 import redis
 import os
@@ -47,6 +56,7 @@ def valid_url(url):
 
 ###########################################################
 
+# The Redis store persists original URL, shortened key, and revocation token.
 store = RedisStore(redis_client=redis_client,
     min_length=3,
     counter_key='shorten:counter_key',
@@ -56,6 +66,7 @@ store = RedisStore(redis_client=redis_client,
 
 @app.route('/', methods=['POST'])
 def shorten():
+    """POST handler to shorten a URL"""
     url = request.form['url'].strip()
 
     if not valid_url(url):
@@ -70,6 +81,7 @@ def shorten():
 
 @app.route('/<key>', methods=['GET'])
 def bounce(key):
+    """GET handler to redirect a shortened key"""
     try:
         url = store[key]
         return redirect(iri_to_uri(url))
@@ -78,6 +90,7 @@ def bounce(key):
 
 @app.route('/revoke/<token>', methods=['POST'])
 def revoke(token):
+    """POST handler to revoke a shortened link by token"""
     try:
         store.revoke(token)
     except RevokeError as e:
