@@ -93,5 +93,6 @@ def revoke(token):
     """POST handler to revoke a shortened link by token"""
     try:
         store.revoke(token)
+        return jsonify({'success': 'hey nice job'}, 200)
     except RevokeError as e:
         return jsonify({'error': e}, 400)
