@@ -1,56 +1,55 @@
-# Serverless-Flask
+# Bertly: URL shortener service in Flask
 
-The fastest way to a Flask application with [Serverless](https://github.com/serverless/serverless).
+Bertly provides three endpoints:
 
-## Usage
+## Create redirect
 
-```
-$ npm install -g serverless
-$ serverless install --url https://github.com/alexdebrie/serverless-flask --name my-flask-app
-$ cd my-flask-app && npm run setup
-<answer prompts>
-$ serverless deploy
-```
+`POST /<key>`
 
-Once the deploy is complete, run `sls info` to get the endpoint:
+Given a URL, return a JSON object containing the shortened URL, and a token to use when revoking the shortened URL.
 
-```
-$ sls info
-Service Information
-<snip>
-endpoints:
-  ANY - https://abc6defghi.execute-api.us-east-1.amazonaws.com/dev <-- Endpoint
-  ANY - https://abc6defghi.execute-api.us-east-1.amazonaws.com/dev/{proxy+}
-```
+Example request:
 
-Copy paste into your browser, and _voila_!
+`curl -X POST -d "url=http://thepretenders.com/" https://bertlydeployed.com`
 
-## Local development
-
-To develop locally, create a virtual environment and install your dependencies:
+Example response:
 
 ```
-virtualenv venv
-source venv/bin/activate
-pip install -r requirements.txt
+{
+  "revoke": "https://bertlydeployed.com/revoke/491dcfe3-7715-479c-a32b-bad375992e20",
+  "status": "okay",
+  "url": "https://bertlydeployed.com/32s"
+}
 ```
 
-Then, run your app:
+## Execute redirect
+
+`GET /<key>`
+
+## Revoke redirect
+
+`POST /revoke/<token>`
+
+Example request:
+
+`curl -X POST https://bertlydeployed.com/revoke/491dcfe3-7715-479c-a32b-bad375992e20`
+
+Response:
 
 ```
-sls wsgi serve
- * Running on http://localhost:5000/ (Press CTRL+C to quit)
- * Restarting with stat
- * Debugger is active!
+{
+  "status": "okay",
+  "success": "hey nice job"
+}
 ```
-
-Navigate to [localhost:5000](http://localhost:5000) to see your app running locally.
 
 ## Configuration
 
-The `postsetup.js` prompt will walk you through some setup questions that may be
-custom to your use case. This includes:
+See `INSTALL.md` for gory details.
 
-- Python runtime version;
-- Whether you have Docker setup, which assists in packaging dependencies. For more info, check out [this post on managing your Python packages with Serverless](https://serverless.com/blog/serverless-python-packaging/);
-- Whether you want to set up a custom domain that you own, rather than a random assigned one from AWS. For more details on that, look at [this post on setting up a custom domain with API Gateway and Serverless](https://serverless.com/blog/serverless-api-gateway-domain/).
+## Thanks to
+
+- [Serverless framework](https://github.com/serverless/serverless), holy crap
+- [Shorten example](https://pythonhosted.org/shorten/user/examples.html)
+- [Flask-Serverless deployment template](https://github.com/alexdebrie/serverless-flask)
+
