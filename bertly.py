@@ -66,13 +66,16 @@ def require_api_key(view_function):
         api_key = os.environ.get('BERTLY_API_KEY')
 
         if not api_key_label:
-            app.logger.error("No name for API key: Should be defined in environment as BERTLY_API_KEY_NAME")
+            app.logger.error("No name for API key: Should be defined in " +
+                             "environment as BERTLY_API_KEY_NAME")
             abort(401)
-        if request.headers.get(api_key_label) and request.headers.get(api_key_label) == api_key:
+        if request.headers.get(api_key_label) and \
+            request.headers.get(api_key_label) == api_key:
             return view_function(*args, **kwargs)
         else:
             received_api_key = request.headers.get(api_key_label) or "[None]"
-            app.logger.warning("Incorrect API key header: " + api_key_label + ' = ' + received_api_key)
+            app.logger.warning("Incorrect API key header: " + api_key_label
+                               + ' = ' + received_api_key)
             abort(401)
     return decorated_function
 
