@@ -118,6 +118,7 @@ def bounce(key):
     except KeyError as e:
         return jsonify({'error': 'url not found'}, 400)
 
+
 @app.route('/revoke/<token>', methods=['POST'])
 @require_api_key
 def revoke(token):
