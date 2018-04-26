@@ -14,17 +14,18 @@
     :license: MIT, see LICENSE for details
 """
 
-import redis
 import os
+import redis
+
 from flask import Flask, request, redirect, url_for, abort
 from flask import jsonify as _jsonify
 from functools import wraps
+from rfc3987 import parse
 from shorten import RedisStore, NamespacedFormatter, UUIDTokenGenerator
 from shorten import alphabets
 from shorten import RevokeError
-from rfc3987 import parse
-from werkzeug import iri_to_uri
 from urlparse import urlparse
+from werkzeug import iri_to_uri
 
 app = Flask(__name__)
 
