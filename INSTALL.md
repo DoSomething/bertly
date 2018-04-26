@@ -29,7 +29,7 @@ environment:
   COMPOSE_REDIS_URL: '${ssm:bertly-redis-url}'
 ```
 
-For Lambda env vars, just set the `COMPOSE_REDIS_URL` value on the deployed Lambda Function's configuration screen: https://cl.ly/081F0V0G3z2p
+For Lambda env vars, just set the values on the deployed Lambda Function's configuration screen: https://cl.ly/081F0V0G3z2p
 
 ## Deploying
 
