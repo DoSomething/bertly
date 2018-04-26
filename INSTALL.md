@@ -14,9 +14,11 @@ In practice, I disabled Docker (`dockerizePip: false` in `serverless.yml`) becau
 
 ## Env vars
 
-There is only one variable to set in v1:
-
-- `COMPOSE_REDIS_URL`: Full Redis connection URL, of the form `redis://user:password@redisurl.com:123`
+| Env var               | Description                                                                                         |
+|-----------------------|-----------------------------------------------------------------------------------------------------|
+| `COMPOSE_REDIS_URL`   | Full Redis connection URL, of the form `redis://user:password@redisurl.com:123`                     |
+| `BERTLY_API_KEY_NAME` | Name of the header used to pass the API key. The key is required for the create and revoke methods. |
+| `BERTLY_API_KEY`      | The API key value.                                                                                  |
 
 In theory, we should be able to use the [AWS SSM Parameter Store](https://hackernoon.com/you-should-use-ssm-parameter-store-over-lambda-env-variables-5197fc6ea45b) service, which provides access across applications within AWS. In practice, the Heroku-style, [per-app environment variable setting](https://docs.aws.amazon.com/lambda/latest/dg/env_variables.html) is adequate here. We're not planning to reuse this app's Redis store elsewhere.
 
