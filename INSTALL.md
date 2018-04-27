@@ -4,7 +4,7 @@
 
 A Flask deployment template: https://github.com/alexdebrie/serverless-flask
 
-You can just check out the [Bertly repo](https://github.com/DoSomething/bertly), but I used this template to create the new Servlerless directory:
+You can just check out the [Bertly repo](https://github.com/DoSomething/bertly), but I used this template to create the new Serverless directory:
 
 `serverless install --url https://github.com/alexdebrie/serverless-flask --name bertly`
 
