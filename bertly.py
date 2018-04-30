@@ -18,7 +18,6 @@ import boto3
 import os
 import redis
 import time
-import traceback
 
 from flask import Flask, request, redirect, url_for, abort
 from flask import jsonify as _jsonify
