@@ -153,6 +153,7 @@ def bounce(key):
     except Exception as e:
         app.logger.error("Can't write to DynamoDB")
         app.logger.error(e)
+        app.logger.error(resp)
 
     return redirect(iri_to_uri(url))
 
