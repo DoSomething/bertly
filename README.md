@@ -1,6 +1,6 @@
 # Bertly: URL shortener service in Flask
 
-Bertly provides three endpoints:
+Bertly provides three endpoints to create, handle, and revoke shortened URLs.
 
 ## Authentication
 
