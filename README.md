@@ -55,6 +55,10 @@ Response:
 
 See `INSTALL.md` for gory details.
 
+## Click tracking
+
+This app includes a DynamoDB table to track clicks. After deploying, you'll see a table called `bertly-clicks-[stage]`, where `[stage]` is the instance (`dev`, `prod`, etc.).
+
 ## Thanks to
 
 - [Serverless framework](https://github.com/serverless/serverless), holy crap
