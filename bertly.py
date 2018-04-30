@@ -14,8 +14,10 @@
     :license: MIT, see LICENSE for details
 """
 
+import boto3
 import os
 import redis
+import time
 
 from flask import Flask, request, redirect, url_for, abort
 from flask import jsonify as _jsonify
@@ -47,6 +49,27 @@ redis_client = redis.StrictRedis(
 
 formatter = NamespacedFormatter('shorten')
 token_gen = UUIDTokenGenerator()
+
+# The Redis store persists original URL, shortened key, and revocation token.
+store = RedisStore(redis_client=redis_client,
+                   min_length=3,
+                   counter_key='shorten:counter_key',
+                   formatter=formatter,
+                   token_gen=token_gen,
+                   alphabet=alphabets.URLSAFE_DISSIMILAR)
+
+# DynamoDB click tracking table
+CLICK_TABLE = os.environ.get('CLICK_TABLE')
+IS_OFFLINE = os.environ.get('IS_OFFLINE')
+
+if IS_OFFLINE:
+    dynamo_client = boto3.client(
+        'dynamodb',
+        region_name='localhost',
+        endpoint_url='http://localhost:8000'
+    )
+else:
+    dynamo_client = boto3.client('dynamodb')
 
 
 def jsonify(obj, status_code=200):
@@ -84,16 +107,6 @@ def require_api_key(view_function):
 
 ###########################################################
 
-
-# The Redis store persists original URL, shortened key, and revocation token.
-store = RedisStore(redis_client=redis_client,
-                   min_length=3,
-                   counter_key='shorten:counter_key',
-                   formatter=formatter,
-                   token_gen=token_gen,
-                   alphabet=alphabets.URLSAFE_DISSIMILAR)
-
-
 @app.route('/', methods=['POST'])
 @require_api_key
 def shorten():
@@ -115,10 +128,33 @@ def bounce(key):
     """GET handler to redirect a shortened key"""
     try:
         url = store[key]
-        return redirect(iri_to_uri(url))
+
     except KeyError as e:
         return jsonify({'error': 'url not found'}, 400)
 
+    try:
+        # Record click event
+        click_time = str(time.time())
+        click_key = click_time + "_" + key
+
+        app.logger.debug("table = " + CLICK_TABLE)
+        app.logger.debug("key = " + click_key)
+
+        resp = dynamo_client.put_item(
+            TableName=CLICK_TABLE,
+            Item={
+                'click_key': {'S': str(click_time) + key},
+                'click_timestamp': {'S': click_time},
+                'url': {'S': key},
+                'target': {'S': url}
+            }
+        )
+    except Exception as e:
+        app.logger.error("Can't write to DynamoDB")
+        app.logger.error(e)
+        app.logger.error(resp)
+
+    return redirect(iri_to_uri(url))
 
 @app.route('/revoke/<token>', methods=['POST'])
 @require_api_key
