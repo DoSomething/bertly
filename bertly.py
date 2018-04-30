@@ -66,8 +66,8 @@ IS_OFFLINE = os.environ.get('IS_OFFLINE')
 if IS_OFFLINE:
     dynamo_client = boto3.client(
         'dynamodb',
-        region_name = 'localhost',
-        endpoint_url = 'http://localhost:8000'
+        region_name='localhost',
+        endpoint_url='http://localhost:8000'
     )
 else:
     dynamo_client = boto3.client('dynamodb')
@@ -142,12 +142,12 @@ def bounce(key):
         app.logger.debug("key = " + click_key)
 
         resp = dynamo_client.put_item(
-            TableName = CLICK_TABLE,
-            Item = {
-                'click_key': { 'S': str(click_time) + key },
-                'click_timestamp': { 'S': click_time },
-                'url': { 'S': key },
-                'target': { 'S': url }
+            TableName=CLICK_TABLE,
+            Item={
+                'click_key': {'S': str(click_time) + key},
+                'click_timestamp': {'S': click_time},
+                'url': {'S': key},
+                'target': {'S': url}
             }
         )
     except Exception as e:
