@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-    package.module
+    bertly.module
     ~~~~~~~~~~~~~~
 
     A URL shortener service, mostly from
-    Mostly from https://pythonhosted.org/shorten/user/examples.html
+    https://pythonhosted.org/shorten/user/examples.html
 
     Serverless deployment template from
     https://github.com/alexdebrie/serverless-flask
@@ -39,7 +39,6 @@ if not compose_redis_url:
 # Establish Redis connection as redis_client
 ssl_wanted = compose_redis_url.startswith("rediss:")
 parsed = urlparse(compose_redis_url)
-ssl_wanted = compose_redis_url.startswith("rediss:")
 redis_client = redis.StrictRedis(
     host=parsed.hostname,
     port=parsed.port,
