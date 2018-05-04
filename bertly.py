@@ -107,7 +107,9 @@ def require_api_key(view_function):
 
 ###########################################################
 
-## ROUTE: POST /
+# ROUTE: POST /
+
+
 @app.route('/', methods=['POST'])
 @require_api_key
 def shorten():
@@ -124,7 +126,9 @@ def shorten():
 
     return jsonify({'url': url, 'revoke': revoke})
 
-## ROUTE: GET /<key>
+# ROUTE: GET /<key>
+
+
 @app.route('/<key>', methods=['GET'])
 def bounce(key):
     """GET handler to redirect a shortened key"""
@@ -145,10 +149,10 @@ def bounce(key):
         resp = dynamo_client.put_item(
             TableName=CLICK_TABLE,
             Item={
-                'click_key': {'S': str(click_time) + key}, # unique ID
-                'click_timestamp': {'S': click_time}, # Timestamp / Unix epoch
-                'url': {'S': key}, # Shortened URL
-                'target': {'S': url} # Original URL
+                'click_key': {'S': str(click_time) + key},  # unique ID
+                'click_timestamp': {'S': click_time},  # Timestamp / Unix epoch
+                'url': {'S': key},  # Shortened URL
+                'target': {'S': url}  # Original URL
             }
         )
     except Exception as e:
