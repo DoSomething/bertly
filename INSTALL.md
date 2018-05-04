@@ -50,3 +50,9 @@ Or, you can set profile and region in your local env vars, e.g.,
 ```
 export AWS_PROFILE="serverless" && export AWS_REGION=us-east-1
 ```
+
+## Setting up a custom domain
+
+Follow the instructions on the Serverless blog:  https://serverless.com/blog/serverless-api-gateway-domain/
+
+This project's `serverless.yml` already includes the necessary library.
