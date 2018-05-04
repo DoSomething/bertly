@@ -22,6 +22,7 @@ import time
 from flask import Flask, request, redirect, url_for, abort
 from flask import jsonify as _jsonify
 from functools import wraps
+from models import db, Click
 from rfc3987 import parse
 from shorten import RedisStore, NamespacedFormatter, UUIDTokenGenerator
 from shorten import alphabets
@@ -30,6 +31,9 @@ from urlparse import urlparse
 from werkzeug import iri_to_uri
 
 app = Flask(__name__)
+
+# Enable Serverless offline mode for great fun
+is_offline = os.environ.get('IS_OFFLINE')
 
 # COMPOSE_REDIS_URL: A complete access URL for a Redis instance
 compose_redis_url = os.environ.get('COMPOSE_REDIS_URL')
@@ -57,19 +61,26 @@ store = RedisStore(redis_client=redis_client,
                    token_gen=token_gen,
                    alphabet=alphabets.URLSAFE_DISSIMILAR)
 
-# DynamoDB click tracking table
-CLICK_TABLE = os.environ.get('CLICK_TABLE')
-IS_OFFLINE = os.environ.get('IS_OFFLINE')
+# PostgresQL / SQLAlchemy connection
+POSTGRES = {
+    'user': os.environ.get('POSTGRESQL_USER'),
+    'pw': os.environ.get('POSTGRESQL_PASSWORD'),
+    'db': os.environ.get('POSTGRESQL_DB'),
+    'host': os.environ.get('POSTGRESQL_HOST'),
+    'port': os.environ.get('POSTGRESQL_PORT'),
+}
 
-if IS_OFFLINE:
-    dynamo_client = boto3.client(
-        'dynamodb',
-        region_name='localhost',
-        endpoint_url='http://localhost:8000'
-    )
-else:
-    dynamo_client = boto3.client('dynamodb')
+# or postgresql+psycopg2://
+app.config['SQLALCHEMY_DATABASE_URI'] =(
+    'postgresql://%(user)s:' +
+    '\%(pw)s@%(host)s:%(port)s/%(db)s') % POSTGRES
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+db.init_app(app)
+
+"""
+Helper functions & decorators
+"""
 
 def jsonify(obj, status_code=200):
     obj['status'] = 'error' if 'error' in obj else 'okay'
@@ -104,11 +115,11 @@ def require_api_key(view_function):
             abort(401)
     return decorated_function
 
-###########################################################
+"""
+Routes
+"""
 
 # ROUTE: POST /
-
-
 @app.route('/', methods=['POST'])
 @require_api_key
 def shorten():
@@ -126,8 +137,6 @@ def shorten():
     return jsonify({'url': url, 'revoke': revoke})
 
 # ROUTE: GET /<key>
-
-
 @app.route('/<key>', methods=['GET'])
 def bounce(key):
     """GET handler to redirect a shortened key"""
@@ -137,27 +146,11 @@ def bounce(key):
     except KeyError as e:
         return jsonify({'error': 'url not found'}, 400)
 
-    try:
-        # Record click event, by writing to a DynamoDB table.
-        click_time = str(time.time())
-        click_key = click_time + "_" + key
-
-        app.logger.debug("table = " + CLICK_TABLE)
-        app.logger.debug("key = " + click_key)
-
-        resp = dynamo_client.put_item(
-            TableName=CLICK_TABLE,
-            Item={
-                'click_key': {'S': str(click_time) + key},  # unique ID
-                'click_timestamp': {'S': click_time},  # Timestamp / Unix epoch
-                'url': {'S': key},  # Shortened URL
-                'target': {'S': url}  # Original URL
-            }
-        )
-    except Exception as e:
-        app.logger.error("Can't write to DynamoDB")
-        app.logger.error(e)
-        app.logger.error(resp)
+    # Record new click. See models.py for data definition
+    id = key + str(time.time())
+    click = Click(click_id=id, click_time=None, shortened=key, target_url=url)
+    db.session.add(click)
+    db.session.commit()
 
     # Process redirect even if we fail to record the click.
     return redirect(iri_to_uri(url))
