@@ -4,6 +4,7 @@ plugins:
   - serverless-python-requirements
   - serverless-wsgi
   - serverless-dynamodb-local
+  - serverless-domain-manager
 
 custom:
   clickTableName: 'bertly-clicks-${self:provider.stage}'
@@ -15,6 +16,11 @@ custom:
   dynamodb:
     start:
       migrate: true
+  customDomain:
+    domainName: dosome.click
+    basePath: ''
+    stage: ${self:provider.stage}
+    createRoute53Record: true
 
 package:
   exclude:

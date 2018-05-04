@@ -106,6 +106,9 @@ def require_api_key(view_function):
 
 ###########################################################
 
+# ROUTE: POST /
+
+
 @app.route('/', methods=['POST'])
 @require_api_key
 def shorten():
@@ -122,6 +125,9 @@ def shorten():
 
     return jsonify({'url': url, 'revoke': revoke})
 
+# ROUTE: GET /<key>
+
+
 @app.route('/<key>', methods=['GET'])
 def bounce(key):
     """GET handler to redirect a shortened key"""
@@ -132,7 +138,7 @@ def bounce(key):
         return jsonify({'error': 'url not found'}, 400)
 
     try:
-        # Record click event
+        # Record click event, by writing to a DynamoDB table.
         click_time = str(time.time())
         click_key = click_time + "_" + key
 
@@ -142,10 +148,10 @@ def bounce(key):
         resp = dynamo_client.put_item(
             TableName=CLICK_TABLE,
             Item={
-                'click_key': {'S': str(click_time) + key},
-                'click_timestamp': {'S': click_time},
-                'url': {'S': key},
-                'target': {'S': url}
+                'click_key': {'S': str(click_time) + key},  # unique ID
+                'click_timestamp': {'S': click_time},  # Timestamp / Unix epoch
+                'url': {'S': key},  # Shortened URL
+                'target': {'S': url}  # Original URL
             }
         )
     except Exception as e:
@@ -153,8 +159,10 @@ def bounce(key):
         app.logger.error(e)
         app.logger.error(resp)
 
+    # Process redirect even if we fail to record the click.
     return redirect(iri_to_uri(url))
 
+# ROUTE: POST /revoke/<token>
 @app.route('/revoke/<token>', methods=['POST'])
 @require_api_key
 def revoke(token):
