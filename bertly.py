@@ -19,6 +19,7 @@ import os
 import redis
 import time
 
+from datetime import datetime
 from flask import Flask, request, redirect, url_for, abort
 from flask import jsonify as _jsonify
 from functools import wraps
@@ -148,7 +149,7 @@ def bounce(key):
 
     # Record new click. See models.py for data definition
     id = key + str(time.time())
-    click = Click(click_id=id, click_time=None, shortened=key, target_url=url)
+    click = Click(click_id=id, click_time=datetime.utcnow(), shortened=key, target_url=url)
     db.session.add(click)
     db.session.commit()
 
