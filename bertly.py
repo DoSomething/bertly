@@ -72,7 +72,7 @@ POSTGRES = {
 }
 
 # or postgresql+psycopg2://
-app.config['SQLALCHEMY_DATABASE_URI'] =(
+app.config['SQLALCHEMY_DATABASE_URI'] = (
     'postgresql://%(user)s:' +
     '%(pw)s@%(host)s:%(port)s/%(db)s') % POSTGRES
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -116,11 +116,14 @@ def require_api_key(view_function):
             abort(401)
     return decorated_function
 
+
 """
 Routes
 """
 
 # ROUTE: POST /
+
+
 @app.route('/', methods=['POST'])
 @require_api_key
 def shorten():
@@ -149,7 +152,8 @@ def bounce(key):
 
     # Record new click. See models.py for data definition
     id = key + str(time.time())
-    click = Click(click_id=id, click_time=datetime.utcnow(), shortened=key, target_url=url)
+    click = Click(click_id=id, click_time=datetime.utcnow(),
+                  shortened=key, target_url=url)
     db.session.add(click)
     db.session.commit()
 

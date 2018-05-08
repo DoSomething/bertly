@@ -17,6 +17,7 @@ db = SQLAlchemy()
 # Click tracking table
 click_table = os.environ.get('CLICK_TABLE')
 
+
 class Click(db.Model):
     """Click tracker"""
     __tablename__ = click_table
