@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "npm": "^5.7.1",
+    "serverless": "^1.27.2",
     "serverless-dynamodb-local": "^0.2.30"
   }
 }
