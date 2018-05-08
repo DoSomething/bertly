@@ -147,7 +147,7 @@ def bounce(key):
     try:
         url = store[key]
 
-    except KeyError as e:
+    except KeyError:
         return jsonify({'error': 'url not found'}, 400)
 
     # Record new click. See models.py for data definition
