@@ -10,15 +10,22 @@ You can just check out the [Bertly repo](https://github.com/DoSomething/bertly),
 
 This will set up Docker to manage Python dependencies locally. Explanation: https://serverless.com/blog/serverless-python-packaging/
 
-In practice, I disabled Docker (`dockerizePip: false` in `serverless.yml`) because pip cache was throwing a permissions error, and because none of the required libraries have complicated build procedures.
+On a Mac, set `dockerizePip: non-linux` in `serverless.yml`) to allow for Docker builds locally.
 
 ## Env vars
 
 | Env var               | Description                                                                                         |
 |-----------------------|-----------------------------------------------------------------------------------------------------|
 | `COMPOSE_REDIS_URL`   | Full Redis connection URL, of the form `redis://user:password@redisurl.com:123`                     |
-| `BERTLY_API_KEY_NAME` | Name of the header used to pass the API key. The key is required for the create and revoke methods. |
-| `BERTLY_API_KEY`      | The API key value.                                                                                  |
+| `BERTLY_API_KEY_NAME` | Name of the header used to pass the API key. The key is required for the create and revoke methods |
+| `BERTLY_API_KEY`      | The API key value.                                 |
+| `CLICK_TABLE`      | Name of the table (We use "clicks")                   |
+| `POSTGRESQL_DB`      | PostgresQL DB name                                  |
+| `POSTGRESQL_HOST`      | PostgresQL DB name                                  |
+| `POSTGRESQL_USER`      | PostgresQL DB user                                  |
+| `POSTGRESQL_PASSWORD`      | PostgresQL DB password                                  |
+| `POSTGRESQL_PORT`      | PostgresQL DB port                                  |
+
 
 In theory, we should be able to use the [AWS SSM Parameter Store](https://hackernoon.com/you-should-use-ssm-parameter-store-over-lambda-env-variables-5197fc6ea45b) service, which provides access across applications within AWS. In practice, the Heroku-style, [per-app environment variable setting](https://docs.aws.amazon.com/lambda/latest/dg/env_variables.html) is adequate here. We're not planning to reuse this app's Redis store elsewhere.
 
@@ -29,7 +36,7 @@ environment:
   COMPOSE_REDIS_URL: '${ssm:bertly-redis-url}'
 ```
 
-For Lambda env vars, just set the values on the deployed Lambda Function's configuration screen: https://cl.ly/081F0V0G3z2p
+For Lambda env vars, just set the values on the deployed Lambda Function's configuration screen: https://cl.ly/271W2n44362Z
 
 ## Deploying
 
