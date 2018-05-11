@@ -20,7 +20,7 @@ import redis
 import time
 
 from datetime import datetime
-from flask import Flask, request, redirect, url_for, abort
+from flask import Flask, request, redirect, url_for, abort, render_template
 from flask import jsonify as _jsonify
 from functools import wraps
 from models import db, Click
@@ -122,8 +122,6 @@ Routes
 """
 
 # ROUTE: POST /
-
-
 @app.route('/', methods=['POST'])
 @require_api_key
 def shorten():
@@ -148,7 +146,7 @@ def bounce(key):
         url = store[key]
 
     except KeyError:
-        return jsonify({'error': 'url not found'}, 400)
+        abort(404)
 
     # Record new click. See models.py for data definition
     id = key + str(time.time())
@@ -170,3 +168,13 @@ def revoke(token):
         return jsonify({'success': 'hey nice job'}, 200)
     except RevokeError as e:
         return jsonify({'error': e}, 400)
+
+
+"""
+Error handlers
+"""
+
+@app.errorhandler(404)
+def page_not_found(e):
+    app.logger.warn("Bad URL: " + request.url)
+    return render_template('404.html'), 404
