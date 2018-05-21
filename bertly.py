@@ -20,7 +20,7 @@ import redis
 import time
 
 from datetime import datetime
-from flask import Flask, request, redirect, url_for, abort, render_template
+from flask import Flask, request, redirect, url_for, abort
 from flask import jsonify as _jsonify
 from functools import wraps
 from models import db, Click
