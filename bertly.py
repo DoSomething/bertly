@@ -174,6 +174,7 @@ def revoke(token):
 Error handlers
 """
 
+
 @app.errorhandler(404)
 def page_not_found(e):
 
