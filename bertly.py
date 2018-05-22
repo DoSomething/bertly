@@ -122,8 +122,6 @@ Routes
 """
 
 # ROUTE: POST /
-
-
 @app.route('/', methods=['POST'])
 @require_api_key
 def shorten():
@@ -148,7 +146,7 @@ def bounce(key):
         url = store[key]
 
     except KeyError:
-        return jsonify({'error': 'url not found'}, 400)
+        abort(404)
 
     # Record new click. See models.py for data definition
     id = key + str(time.time())
@@ -170,3 +168,21 @@ def revoke(token):
         return jsonify({'success': 'hey nice job'}, 200)
     except RevokeError as e:
         return jsonify({'error': e}, 400)
+
+
+"""
+Error handlers
+"""
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+
+    # Default response code: 302
+    # http://flask.pocoo.org/docs/1.0/api/#flask.redirect
+    return redirect('https://next.dosomething.org/us/404')
+
+    # You could do this to serve a custom 404:
+    #
+    # app.logger.warn("Bad URL: " + request.url)
+    # return render_template('404.html'), 404
