@@ -7,15 +7,11 @@ plugins:
   - serverless-domain-manager
 
 custom:
-  # clickTableName: 'bertly-clicks-${self:provider.stage}'
   wsgi:
     app: bertly.app
     packRequirements: false
   pythonRequirements:
     dockerizePip: non-linux
-  # dynamodb:
-  #   start:
-  #     migrate: true
   customDomain:
     domainName: dosome.click
     basePath: ''
@@ -32,20 +28,6 @@ provider:
   runtime: python2.7
   stage: dev
   region: us-east-1
-  profile: serverless
-  # iamRoleStatements:
-  #   - Effect: Allow
-  #     Action:
-  #       - dynamodb:Query
-  #       - dynamodb:Scan
-  #       - dynamodb:GetItem
-  #       - dynamodb:PutItem
-  #       - dynamodb:UpdateItem
-  #       - dynamodb:DeleteItem
-  #     Resource:
-  #       - { "Fn::GetAtt": [ "ClickDynamoDBTable", "Arn" ] }
-  # environment:
-  #   CLICK_TABLE: ${self:custom.clickTableName}
 
 functions:
   app:
@@ -53,21 +35,3 @@ functions:
     events:
       - http: ANY /
       - http: 'ANY {proxy+}'
-
-# resources:
-#   Resources:
-#     ClickDynamoDBTable:
-#       Type: 'AWS::DynamoDB::Table'
-#       Properties:
-#         AttributeDefinitions:
-#           -
-#             AttributeName: click_key
-#             AttributeType: S
-#         KeySchema:
-#           -
-#             AttributeName: click_key
-#             KeyType: HASH
-#         ProvisionedThroughput:
-#           ReadCapacityUnits: 1 # Translates roughly to requests per second
-#           WriteCapacityUnits: 20
-#         TableName: ${self:custom.clickTableName}
