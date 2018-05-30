@@ -14,6 +14,8 @@
     :license: MIT, see LICENSE for details
 """
 
+import config
+
 import boto3
 import os
 import redis
@@ -32,6 +34,7 @@ from shorten import RevokeError
 from urlparse import urlparse
 from werkzeug import iri_to_uri
 
+# Create Flask app & initialize extensions.
 app = Flask(__name__)
 migrate = Migrate(app, db)
 
