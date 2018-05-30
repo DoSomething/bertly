@@ -22,6 +22,7 @@ import time
 from datetime import datetime
 from flask import Flask, request, redirect, url_for, abort
 from flask import jsonify as _jsonify
+from flask_migrate import Migrate
 from functools import wraps
 from models import db, Click
 from rfc3987 import parse
@@ -32,6 +33,7 @@ from urlparse import urlparse
 from werkzeug import iri_to_uri
 
 app = Flask(__name__)
+migrate = Migrate(app, db)
 
 # Enable Serverless offline mode for great fun
 is_offline = os.environ.get('IS_OFFLINE')
