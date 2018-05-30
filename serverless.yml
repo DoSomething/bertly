@@ -7,6 +7,10 @@ plugins:
   - serverless-domain-manager
 
 custom:
+  domainEnabled:
+    dev: false
+    qa: false
+    prod: true
   wsgi:
     app: bertly.app
     packRequirements: false
@@ -17,6 +21,7 @@ custom:
     basePath: ''
     stage: ${self:provider.stage}
     createRoute53Record: true
+    enabled: ${self:custom.domainEnabled.${opt:stage, self:provider.stage}}
 
 package:
   exclude:
