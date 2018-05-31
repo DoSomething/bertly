@@ -22,7 +22,7 @@ HINT: Make sure to URL-encode arguments: `?x=test&y=this_thing&z=the-other-thing
 
 Example response:
 
-```
+```json
 {
   "revoke": "https://bertlydeployed.com/revoke/491dcfe3-7715-479c-a32b-bad375992e20",
   "status": "okay",
@@ -34,6 +34,24 @@ Example response:
 
 `GET /<key>`
 
+## Get clicks
+
+`GET /<key>/clicks`
+
+Example request:
+
+`curl https://bertlydeployed.com/32s`
+
+Response:
+
+```json
+{
+  "status": "okay",
+  "url": "http://thepretenders.com",
+  "count": 3
+}
+```
+
 ## Revoke redirect
 
 `POST /revoke/<token>`
@@ -44,7 +62,7 @@ Example request:
 
 Response:
 
-```
+```json
 {
   "status": "okay",
   "success": "hey nice job"
