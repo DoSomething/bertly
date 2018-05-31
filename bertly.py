@@ -153,6 +153,23 @@ def bounce(key):
     # Process redirect even if we fail to record the click.
     return redirect(iri_to_uri(url))
 
+
+# ROUTE: GET /<key>/clicks
+@app.route('/<key>/clicks', methods=['GET'])
+def clicks(key):
+    """GET handler to count clicks on a shortened key"""
+    try:
+        url = store[key]
+
+    except KeyError:
+        abort(404)
+
+    # Find the number of clicks for this shortened URL:
+    count = db.session.query(Click).filter(Click.shortened == key).count()
+
+    return jsonify({'url': url, 'count': count}, 200)
+
+
 # ROUTE: POST /revoke/<token>
 @app.route('/revoke/<token>', methods=['POST'])
 @require_api_key
