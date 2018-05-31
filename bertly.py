@@ -14,6 +14,8 @@
     :license: MIT, see LICENSE for details
 """
 
+import config
+
 import boto3
 import os
 import redis
@@ -22,6 +24,7 @@ import time
 from datetime import datetime
 from flask import Flask, request, redirect, url_for, abort
 from flask import jsonify as _jsonify
+from flask_migrate import Migrate
 from functools import wraps
 from models import db, Click
 from rfc3987 import parse
@@ -31,13 +34,15 @@ from shorten import RevokeError
 from urlparse import urlparse
 from werkzeug import iri_to_uri
 
+# Create Flask app & initialize extensions.
 app = Flask(__name__)
+migrate = Migrate(app, db)
 
 # Enable Serverless offline mode for great fun
 is_offline = os.environ.get('IS_OFFLINE')
 
 # COMPOSE_REDIS_URL: A complete access URL for a Redis instance
-compose_redis_url = os.environ.get('COMPOSE_REDIS_URL')
+compose_redis_url = config.REDIS_URL
 if not compose_redis_url:
     app.logger.error("No Redis URL")
 
@@ -62,26 +67,16 @@ store = RedisStore(redis_client=redis_client,
                    token_gen=token_gen,
                    alphabet=alphabets.URLSAFE_DISSIMILAR)
 
-# PostgresQL / SQLAlchemy connection
-POSTGRES = {
-    'user': os.environ.get('POSTGRESQL_USER'),
-    'pw': os.environ.get('POSTGRESQL_PASSWORD'),
-    'db': os.environ.get('POSTGRESQL_DB'),
-    'host': os.environ.get('POSTGRESQL_HOST'),
-    'port': os.environ.get('POSTGRESQL_PORT'),
-}
-
-# or postgresql+psycopg2://
-app.config['SQLALCHEMY_DATABASE_URI'] = (
-    'postgresql://%(user)s:' +
-    '%(pw)s@%(host)s:%(port)s/%(db)s') % POSTGRES
+# Configure PostgreSQL/SQLAlchemy connection:
+app.config['SQLALCHEMY_DATABASE_URI'] = config.POSTGRES_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 db.init_app(app)
+
 
 """
 Helper functions & decorators
 """
+
 
 def jsonify(obj, status_code=200):
     obj['status'] = 'error' if 'error' in obj else 'okay'
