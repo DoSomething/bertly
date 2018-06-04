@@ -31,6 +31,7 @@ from functools import wraps
 from models import db, Click
 from rfc3987 import parse
 from urlparse import urlparse
+from url_normalize import url_normalize
 from werkzeug import iri_to_uri
 
 # Create Flask app & initialize extensions.
@@ -70,6 +71,7 @@ Helper functions & decorators
 
 def get_key_for_url(url):
     """Given a URL, (create and) return a shortened key."""
+    url = url_normalize(url)
     hash = hashlib.sha256(url.encode()).hexdigest()
     key = redis_client.get('bertly:url:{}'.format(hash))
 
