@@ -19,6 +19,8 @@ import config
 import boto3
 import os
 import redis
+import short_url
+import hashlib
 import time
 
 from datetime import datetime
@@ -28,9 +30,6 @@ from flask_migrate import Migrate
 from functools import wraps
 from models import db, Click
 from rfc3987 import parse
-from shorten import RedisStore, NamespacedFormatter, UUIDTokenGenerator
-from shorten import alphabets
-from shorten import RevokeError
 from urlparse import urlparse
 from werkzeug import iri_to_uri
 
@@ -54,18 +53,9 @@ redis_client = redis.StrictRedis(
     port=parsed.port,
     password=parsed.password,
     ssl=ssl_wanted,
-    decode_responses=True)
-
-formatter = NamespacedFormatter('shorten')
-token_gen = UUIDTokenGenerator()
-
-# The Redis store persists original URL, shortened key, and revocation token.
-store = RedisStore(redis_client=redis_client,
-                   min_length=3,
-                   counter_key='shorten:counter_key',
-                   formatter=formatter,
-                   token_gen=token_gen,
-                   alphabet=alphabets.URLSAFE_DISSIMILAR)
+    decode_responses=True,
+    socket_connect_timeout=1.0,
+    socket_timeout=1.0)
 
 # Configure PostgreSQL/SQLAlchemy connection:
 app.config['SQLALCHEMY_DATABASE_URI'] = config.POSTGRES_URL
@@ -76,6 +66,27 @@ db.init_app(app)
 """
 Helper functions & decorators
 """
+
+
+def get_key_for_url(url):
+    """Given a URL, (create and) return a shortened key."""
+    hash = hashlib.sha256(url.encode()).hexdigest()
+    key = redis_client.get('bertly:url:{}'.format(hash))
+
+    if key is None:
+        counter = redis_client.incr('bertly:counter', 1)
+        key = short_url.encode_url(int(counter))
+
+        hash = hashlib.sha256(url.encode()).hexdigest()
+        redis_client.set('bertly:url:{}'.format(hash), key)
+        redis_client.set('bertly:key:{}'.format(key), url)
+
+    return key
+
+
+def get_url_for_key(key):
+    """Given a shortened key, return the full URL."""
+    return redis_client.get('bertly:key:{}'.format(key))
 
 
 def jsonify(obj, status_code=200):
@@ -116,6 +127,7 @@ def require_api_key(view_function):
 Routes
 """
 
+
 # ROUTE: POST /
 @app.route('/', methods=['POST'])
 @require_api_key
@@ -126,21 +138,20 @@ def shorten():
     if not valid_url(url):
         return jsonify({'error': str(e)}, 400)
 
-    key, token = store.insert(url)
-
+    key = get_key_for_url(url)
     url = url_for('bounce', key=key, _external=True)
-    revoke = url_for('revoke', token=token, _external=True)
+    revoke = url_for('revoke', key=key, _external=True)
 
     return jsonify({'url': url, 'revoke': revoke})
+
 
 # ROUTE: GET /<key>
 @app.route('/<key>', methods=['GET'])
 def bounce(key):
     """GET handler to redirect a shortened key"""
-    try:
-        url = store[key]
+    url = get_url_for_key(key)
 
-    except KeyError:
+    if url is None:
         abort(404)
 
     # Record new click. See models.py for data definition
@@ -158,11 +169,10 @@ def bounce(key):
 @app.route('/<key>/clicks', methods=['GET'])
 def clicks(key):
     """GET handler to count clicks on a shortened key"""
-    try:
-        url = store[key]
+    url = get_url_for_key(key)
 
-    except KeyError:
-        abort(404)
+    if url is None:
+        return jsonify({'error': 'invalid shortlink'}, 400)
 
     # Find the number of clicks for this shortened URL:
     count = db.session.query(Click).filter(Click.shortened == key).count()
@@ -171,15 +181,21 @@ def clicks(key):
 
 
 # ROUTE: POST /revoke/<token>
-@app.route('/revoke/<token>', methods=['POST'])
+@app.route('/revoke/<key>', methods=['POST'])
 @require_api_key
-def revoke(token):
+def revoke(key):
     """POST handler to revoke a shortened link by token"""
-    try:
-        store.revoke(token)
-        return jsonify({'success': 'hey nice job'}, 200)
-    except RevokeError as e:
-        return jsonify({'error': e}, 400)
+    url = get_url_for_key(key)
+
+    if url is None:
+        return jsonify({'error': 'invalid shortlink'}, 400)
+
+    # Remove that URL & key from the store:
+    hash = hashlib.sha256(url.encode()).hexdigest()
+    redis_client.delete('bertly:url:{}'.format(hash))
+    redis_client.delete('bertly:key:{}'.format(key))
+
+    return jsonify({'success': 'hey nice job'}, 200)
 
 
 """
