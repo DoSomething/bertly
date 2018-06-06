@@ -32,7 +32,6 @@ from models import db, Click
 from rfc3987 import parse
 from urlparse import urlparse
 from url_normalize import url_normalize
-from werkzeug import iri_to_uri
 
 # Create Flask app & initialize extensions.
 app = Flask(__name__)
@@ -164,7 +163,7 @@ def bounce(key):
     db.session.commit()
 
     # Process redirect even if we fail to record the click.
-    return redirect(iri_to_uri(url))
+    return redirect(url)
 
 
 # ROUTE: GET /<key>/clicks
