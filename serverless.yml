@@ -21,7 +21,7 @@ custom:
     basePath: ''
     stage: ${self:provider.stage}
     createRoute53Record: true
-    enabled: true
+    enabled: ${self:custom.domainEnabled.${opt:stage, self:provider.stage}}
 
 package:
   exclude:
