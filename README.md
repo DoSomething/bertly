@@ -2,12 +2,12 @@
 
 This is **Bertly**, the DoSomething.org link shortener. We use it to create shareable URLs, like this: [`dosome.click/wq544`](https://dosome.click/wq544). Bertly is built using [Flask](http://flask.pocoo.org), [Serverless Framework](https://serverless.com), and [`short_url`](https://pypi.org/project/short_url/). It's hosted on [AWS Lambda](https://aws.amazon.com/lambda/). We don't know where the name came from, but it sounds a bit familiar...
 
-### Getting Started
+## Getting Started
 
 Check out the [API Documentation](https://github.com/DoSomething/bertly/blob/docs/documentation/README.md) to start using
 Bertly! :link:
 
-### Contributing
+## Contributing
 
 Install [Node](https://nodejs.org/en/), [Python](https://www.python.org), and [VirtualEnv](https://virtualenv.pypa.io/en/stable/). You'll also need a local [Redis](https://redis.io) and [PostgreSQL](https://www.postgresql.org) database.
 
@@ -31,7 +31,7 @@ $ npm start
 
 We automatically lint all pull requests with [Stickler CI](https://stickler-ci.com).
 
-### Deployments
+## Deployments
 
 Bertly runs in [AWS Lambda](https://aws.amazon.com/lambda/) under separate development and production organizations.
 
@@ -66,12 +66,12 @@ Then, run either `npm run deploy:dev` or `npm run deploy:prod` to deploy!
 +    enabled: true
 ```
 
-### Security Vulnerabilities
+## Security Vulnerabilities
 
 We take security very seriously. Any vulnerabilities in Bertly should be reported to [security@dosomething.org](mailto:security@dosomething.org),
 and will be promptly addressed. Thank you for taking the time to responsibly disclose any issues you find.
 
-### License
+## License
 
 &copy; DoSomething.org. Bertly is free software, and may be redistributed under the terms specified
 in the [LICENSE](https://github.com/DoSomething/bertly/blob/master/LICENSE) file. The name and logo for
