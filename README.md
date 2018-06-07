@@ -9,7 +9,7 @@ Bertly! :link:
 
 ### Contributing
 
-Install [Node](https://nodejs.org/en/), [Python](https://www.python.org), [VirtualEnv](https://virtualenv.pypa.io/en/stable/), and the [AWS CLI](https://aws.amazon.com/cli/). You'll also need a local [Redis](https://redis.io) and [PostgreSQL](https://www.postgresql.org) database.
+Install [Node](https://nodejs.org/en/), [Python](https://www.python.org), and [VirtualEnv](https://virtualenv.pypa.io/en/stable/). You'll also need a local [Redis](https://redis.io) and [PostgreSQL](https://www.postgresql.org) database.
 
 ```sh
 # Create virtual environment:
@@ -30,6 +30,41 @@ $ npm start
 ```
 
 We automatically lint all pull requests with [Stickler CI](https://stickler-ci.com).
+
+### Deployments
+
+Bertly runs in [AWS Lambda](https://aws.amazon.com/lambda/) under separate development and production organizations.
+
+Before you start, make sure you've followed the "contributing" directions above & manually tested your code. Then, install [Docker](https://www.docker.com/docker-mac) and the [AWS CLI](https://aws.amazon.com/cli/), and configure it with our "dev" and "production" IAM roles (found in Lastpass):
+
+```sh
+$ aws configure --profile serverless-dev
+AWS Access Key ID [None]: **************
+AWS Secret Access Key [None]: **************
+Default region name [None]: us-east-1
+Default output format [None]: text
+
+$ aws configure --profile serverless-production
+AWS Access Key ID [None]: **************
+AWS Secret Access Key [None]: **************
+Default region name [None]: us-east-1
+Default output format [None]: text
+```
+
+Then, run either `npm run deploy:dev` or `npm run deploy:prod` to deploy!
+
+**NOTE:** Until [#21](https://github.com/DoSomething/bertly/issues/21) is addressed, you'll need to make a small change to `serverless.yml` to deploy to prod:
+
+```diff
+--- a/serverless.yml
++++ b/serverless.yml
+@@ -21,7 +21,7 @@ custom:
+     basePath: ''
+     stage: ${self:provider.stage}
+     createRoute53Record: true
+-    enabled: ${self:custom.domainEnabled.${opt:stage, self:provider.stage}}
++    enabled: true
+```
 
 ### Security Vulnerabilities
 
