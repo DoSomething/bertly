@@ -1,84 +1,40 @@
-# Bertly: URL shortener service in Flask
+# Bertly [![code style](https://img.shields.io/badge/style-flake8-blue.svg)](http://flake8.pycqa.org/en/latest/)
 
-Bertly provides three endpoints to create, handle, and revoke shortened URLs.
+This is **Bertly**, the DoSomething.org link shortener. We use it to create shareable URLs, like this: [`dosome.click/wq544`](https://dosome.click/wq544). Bertly is built using [Flask](http://flask.pocoo.org), [Serverless Framework](https://serverless.com), and [`short_url`](https://pypi.org/project/short_url/). It's hosted on [AWS Lambda](https://aws.amazon.com/lambda/). We don't know where the name came from, but it sounds a bit familiar...
 
-## Authentication
+### Getting Started
 
-When deployed, Bertly expects a header to be defined for passing an API key. The key is required for the `create` and `revoke` methods, not for the actual redirect request.
+Check out the [API Documentation](https://github.com/DoSomething/bertly/blob/docs/documentation/README.md) to start using
+Bertly! :link:
 
-More details in `INSTALL.md`. For the examples below, assume that the header name is `X-BERTLY-API-KEY`, and the value is `testing`.
+### Contributing
 
-## Create redirect
+Install [Node](https://nodejs.org/en/), [Python](https://www.python.org), [VirtualEnv](https://virtualenv.pypa.io/en/stable/), and the [AWS CLI](https://aws.amazon.com/cli/). You'll also need a local [Redis](https://redis.io) and [PostgreSQL](https://www.postgresql.org) database.
 
-`POST /<key>`
+```sh
+# Create virtual environment:
+virtualenv venv
+source venv/bin/activate
 
-Given a URL, return a JSON object containing the shortened URL, and a token to use when revoking the shortened URL.
+# Install dependencies:
+$ npm i && pip install -r requirements.txt
 
-Example request, ignoring authentication for now:
+# Copy environment variables & edit w/ your machine's details:
+$ cp .env.example .env && vi .env
 
-`curl -X POST --header "X-BERTLY-API-KEY: testing" -d "url=http://thepretenders.com/" https://bertlydeployed.com`
-
-HINT: Make sure to URL-encode arguments: `?x=test&y=this_thing&z=the-other-thing` should get passed as `%3Fx%3Dtest%26y%3Dthis_thing%26z%3Dthe-other-thing`.
-
-Example response:
-
-```json
-{
-  "revoke": "https://bertlydeployed.com/revoke/491dcfe3-7715-479c-a32b-bad375992e20",
-  "status": "okay",
-  "url": "https://bertlydeployed.com/32s"
-}
+# And finally, start your local dev server!
+$ npm start
 ```
 
-## Execute redirect
+We automatically lint all pull requests with [Stickler CI](https://stickler-ci.com).
 
-`GET /<key>`
+### Security Vulnerabilities
 
-## Get clicks
+We take security very seriously. Any vulnerabilities in Bertly should be reported to [security@dosomething.org](mailto:security@dosomething.org),
+and will be promptly addressed. Thank you for taking the time to responsibly disclose any issues you find.
 
-`GET /<key>/clicks`
+### License
 
-Example request:
-
-`curl https://bertlydeployed.com/32s`
-
-Response:
-
-```json
-{
-  "status": "okay",
-  "url": "http://thepretenders.com",
-  "count": 3
-}
-```
-
-## Revoke redirect
-
-`POST /revoke/<token>`
-
-Example request:
-
-`curl -X POST --header "X-BERTLY-API-KEY: testing" https://bertlydeployed.com/revoke/491dcfe3-7715-479c-a32b-bad375992e20`
-
-Response:
-
-```json
-{
-  "status": "okay",
-  "success": "hey nice job"
-}
-```
-
-## Configuration
-
-See `INSTALL.md` for gory details.
-
-## Click tracking
-
-This app includes a DynamoDB table to track clicks. After deploying, you'll see a table called `bertly-clicks-[stage]`, where `[stage]` is the instance (`dev`, `prod`, etc.).
-
-## Thanks to
-
-- [Serverless framework](https://github.com/serverless/serverless), holy crap
-- [Shorten example](https://pythonhosted.org/shorten/user/examples.html)
-- [Flask-Serverless deployment template](https://github.com/alexdebrie/serverless-flask)
+&copy; DoSomething.org. Bertly is free software, and may be redistributed under the terms specified
+in the [LICENSE](https://github.com/DoSomething/bertly/blob/master/LICENSE) file. The name and logo for
+DoSomething.org are trademarks of Do Something, Inc and may not be used without permission.
