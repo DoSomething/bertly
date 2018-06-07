@@ -22,6 +22,9 @@ $ npm i && pip install -r requirements.txt
 # Copy environment variables & edit w/ your machine's details:
 $ cp .env.example .env && vi .env
 
+# Run database migrations to set up your PostgreSQL database:
+$ FLASK_APP=bertly.py flask db upgrade head
+
 # And finally, start your local dev server!
 $ npm start
 ```
