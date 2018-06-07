@@ -1,6 +1,6 @@
 # Bertly [![code style](https://img.shields.io/badge/style-flake8-blue.svg)](http://flake8.pycqa.org/en/latest/)
 
-This is **Bertly**, the DoSomething.org link shortener. We use it to create shareable URLs, like this: [`dosome.click/wq544`](https://dosome.click/wq544). Bertly is built using [Flask](http://flask.pocoo.org), [Serverless Framework](https://serverless.com), and [`short_url`](https://pypi.org/project/short_url/). It's hosted on [AWS Lambda](https://aws.amazon.com/lambda/). We don't know where the name came from, but it sounds a bit familiar...
+This is **Bertly**, the DoSomething.org link shortener. We use it to create shareable URLs, like this: [`dosome.click/wq544`](https://dosome.click/wq544). Bertly is built using [Serverless Framework](https://serverless.com), [Flask](http://flask.pocoo.org), and [`short_url`](https://pypi.org/project/short_url/). It runs on [AWS Lambda](https://aws.amazon.com/lambda/). We don't know where the name came from, but it sounds a bit familiar...
 
 ## Getting Started
 
@@ -33,7 +33,7 @@ We automatically lint all pull requests with [Stickler CI](https://stickler-ci.c
 
 ## Deployments
 
-Bertly runs in [AWS Lambda](https://aws.amazon.com/lambda/) under separate development and production organizations.
+We deploy Bertly using [Serverless Framework](https://serverless.com) in [AWS](https://aws.amazon.com/), under separate development and production organizations.
 
 Before you start, make sure you've followed the "contributing" directions above & manually tested your code. Then, install [Docker](https://www.docker.com/docker-mac) and the [AWS CLI](https://aws.amazon.com/cli/), and configure it with our "dev" and "production" IAM roles (found in Lastpass):
 
@@ -51,7 +51,7 @@ Default region name [None]: us-east-1
 Default output format [None]: text
 ```
 
-Then, run either `npm run deploy:dev` or `npm run deploy:prod` to deploy!
+Then, run either `npm run deploy:dev` or `npm run deploy:prod` to deploy! (For more power, you can also install the [Serverless CLI](https://serverless.com/framework/docs/getting-started/) globally on your machine and run commands with `serverless` or `sls`).
 
 **NOTE:** Until [#21](https://github.com/DoSomething/bertly/issues/21) is addressed, you'll need to make a small change to `serverless.yml` to deploy to prod:
 
