@@ -32,6 +32,7 @@ from models import db, Click
 from rfc3987 import parse
 from urlparse import urlparse
 from url_normalize import url_normalize
+from uuid import uuid4
 
 # Create Flask app & initialize extensions.
 app = Flask(__name__)
@@ -156,8 +157,7 @@ def bounce(key):
         abort(404)
 
     # Record new click. See models.py for data definition
-    id = key + str(time.time())
-    click = Click(click_id=id, click_time=datetime.utcnow(),
+    click = Click(click_id=uuid4(), click_time=datetime.utcnow(),
                   shortened=key, target_url=url)
     db.session.add(click)
     db.session.commit()
