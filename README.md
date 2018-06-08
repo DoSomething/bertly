@@ -4,7 +4,7 @@ This is **Bertly**, a serverless link shortener. We use it to create shareable U
 
 ## Getting Started
 
-Check out the [API Documentation](https://github.com/DoSomething/bertly/blob/docs/documentation/README.md) to start using
+Check out the [API Documentation](https://github.com/DoSomething/bertly/blob/master/documentation/README.md) to start using
 Bertly! :link:
 
 ## Contributing
