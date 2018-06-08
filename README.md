@@ -1,6 +1,6 @@
 # Bertly [![code style](https://img.shields.io/badge/style-flake8-blue.svg)](http://flake8.pycqa.org/en/latest/)
 
-This is **Bertly**, the DoSomething.org link shortener. We use it to create shareable URLs, like this: [`dosome.click/wq544`](https://dosome.click/wq544). Bertly is built using [Serverless Framework](https://serverless.com), [Flask](http://flask.pocoo.org), and [`short_url`](https://pypi.org/project/short_url/). It runs on [AWS Lambda](https://aws.amazon.com/lambda/). We don't know where the name came from, but it sounds a bit familiar...
+This is **Bertly**, a serverless link shortener. We use it to create shareable URLs, like this: [`dosome.click/wq544`](https://dosome.click/wq544). Bertly is built using [Serverless Framework](https://serverless.com), [Flask](http://flask.pocoo.org), and [`short_url`](https://pypi.org/project/short_url/). It runs on [AWS Lambda](https://aws.amazon.com/lambda/). We don't know where the name came from, but it sounds a bit familiar...
 
 ## Getting Started
 
