@@ -52,7 +52,7 @@ resources:
       Type: AWS::EC2::VPC
       Properties:
         CidrBlock: "10.0.0.0/16"
-    ServerlessSubnet:
+    ServerlessSubnetA:
       DependsOn: ServerlessVPC
       Type: AWS::EC2::Subnet
       Properties:
@@ -60,6 +60,22 @@ resources:
           Ref: ServerlessVPC
         AvailabilityZone: ${self:provider.region}a
         CidrBlock: "10.0.0.0/24"
+    ServerlessSubnetB:
+      DependsOn: ServerlessVPC
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId:
+          Ref: ServerlessVPC
+        AvailabilityZone: ${self:provider.region}c
+        CidrBlock: "10.0.1.0/24"
+    ServerlessSubnetC:
+      DependsOn: ServerlessVPC
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId:
+          Ref: ServerlessVPC
+        AvailabilityZone: ${self:provider.region}d
+        CidrBlock: "10.0.2.0/24"
     ServerlessSecurityGroup:
       DependsOn: ServerlessVPC
       Type: AWS::EC2::SecurityGroup
@@ -90,7 +106,9 @@ resources:
       Properties:
         DBSubnetGroupDescription: "RDS Subnet Group"
         SubnetIds:
-        - Ref: ServerlessSubnet
+        - Ref: ServerlessSubnetA
+        - Ref: ServerlessSubnetB
+        - Ref: ServerlessSubnetC
     ServerlessRDSCluster:
       DependsOn: ServerlessStorageSecurityGroup
       Type: AWS::RDS::DBInstance
@@ -109,7 +127,9 @@ resources:
       Properties:
         Description: "Cache Subnet Group"
         SubnetIds:
-        - Ref: ServerlessSubnet
+        - Ref: ServerlessSubnetA
+        - Ref: ServerlessSubnetB
+        - Ref: ServerlessSubnetC
     ServerlessElasticacheCluster:
       DependsOn: ServerlessStorageSecurityGroup
       Type: AWS::ElastiCache::CacheCluster
