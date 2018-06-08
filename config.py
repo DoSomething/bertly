@@ -27,4 +27,3 @@ else:
     }
 
     REDIS_URL = ('redis://%(host)s:%(port)s') % REDIS
-
