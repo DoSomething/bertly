@@ -33,6 +33,11 @@ provider:
   runtime: python2.7
   stage: dev
   region: us-east-1
+  environment:
+    POSTGRES_HOST: { "Fn::GetAtt": [ ServerlessRDSCluster, "Endpoint.Address" ] }
+    POSTGRES_PORT: { "Fn::GetAtt": [ ServerlessRDSCluster, "Endpoint.Port" ] }
+    REDIS_HOST: { "Fn::GetAtt": [ ServerlessElasticacheCluster, "RedisEndpoint.Address" ] }
+    REDIS_PORT: { "Fn::GetAtt": [ ServerlessElasticacheCluster, "RedisEndpoint.Port" ] }
 
 functions:
   app:
@@ -40,3 +45,79 @@ functions:
     events:
       - http: ANY /
       - http: 'ANY {proxy+}'
+
+resources:
+  Resources:
+    ServerlessVPC:
+      Type: AWS::EC2::VPC
+      Properties:
+        CidrBlock: "10.0.0.0/16"
+    ServerlessSubnet:
+      DependsOn: ServerlessVPC
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId:
+          Ref: ServerlessVPC
+        AvailabilityZone: ${self:provider.region}a
+        CidrBlock: "10.0.0.0/24"
+    ServerlessSecurityGroup:
+      DependsOn: ServerlessVPC
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: SecurityGroup for Serverless Functions
+        VpcId:
+          Ref: ServerlessVPC
+    ServerlessStorageSecurityGroup:
+      DependsOn: ServerlessVPC
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: Ingress for Serverless Redis & RDS
+        VpcId:
+          Ref: ServerlessVPC
+        SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '5432'
+          ToPort: '5432'
+          SourceSecurityGroupId:
+            Ref: ServerlessSecurityGroup
+        - IpProtocol: tcp
+          FromPort: '11211'
+          ToPort: '11211'
+          SourceSecurityGroupId:
+            Ref: ServerlessSecurityGroup
+    ServerlessRDSSubnetGroup:
+      Type: AWS::RDS::DBSubnetGroup
+      Properties:
+        DBSubnetGroupDescription: "RDS Subnet Group"
+        SubnetIds:
+        - Ref: ServerlessSubnet
+    ServerlessRDSCluster:
+      DependsOn: ServerlessStorageSecurityGroup
+      Type: AWS::RDS::DBInstance
+      Properties:
+        Engine: Postgres 
+        EngineVersion: '10.3'
+        DBName: 'bertly_clicks'
+        AllocatedStorage: 10
+        DBInstanceClass: db.t2.small
+        VPCSecurityGroups:
+        - "Fn::GetAtt": ServerlessStorageSecurityGroup.GroupId
+        DBSubnetGroupName:
+          Ref: ServerlessRDSSubnetGroup
+    ServerlessElasticacheSubnetGroup:
+      Type: AWS::ElastiCache::SubnetGroup
+      Properties:
+        Description: "Cache Subnet Group"
+        SubnetIds:
+        - Ref: ServerlessSubnet
+    ServerlessElasticacheCluster:
+      DependsOn: ServerlessStorageSecurityGroup
+      Type: AWS::ElastiCache::CacheCluster
+      Properties:
+        Engine: redis
+        NumCacheNodes: 1
+        CacheNodeType: cache.r4.large
+        VpcSecurityGroupIds:
+        - "Fn::GetAtt": ServerlessStorageSecurityGroup.GroupId
+        CacheSubnetGroupName:
+          Ref: ServerlessElasticacheSubnetGroup
