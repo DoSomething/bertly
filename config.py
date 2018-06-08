@@ -18,4 +18,13 @@ POSTGRES_URL = (
     '%(pw)s@%(host)s:%(port)s/%(db)s') % POSTGRES
 
 # Redis
-REDIS_URL = os.getenv('COMPOSE_REDIS_URL')
+if (os.getenv('COMPOSE_REDIS_URL')):
+    REDIS_URL = os.getenv('COMPOSE_REDIS_URL')
+else:
+    REDIS = {
+        'host':  os.getenv('REDIS_HOST'),
+        'port': os.getenv('REDIS_PORT')
+    }
+
+    REDIS_URL = ('redis://%(host)s:%(port)s') % REDIS
+
