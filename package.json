@@ -7,8 +7,9 @@
   },
   "main": "index.js",
   "scripts": {
-    "setup": "npm install",
-    "postsetup": "node postsetup.js",
+    "start": "serverless wsgi serve",
+    "deploy:dev": "serverless --aws-profile serverless-dev deploy",
+    "deploy:prod": "serverless --aws-profile serverless-production deploy",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
