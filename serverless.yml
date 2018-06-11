@@ -46,6 +46,13 @@ functions:
     events:
       - http: ANY /
       - http: 'ANY {proxy+}'
+    vpc:
+      securityGroupIds:
+        - "Fn::GetAtt": ServerlessSecurityGroup.GroupId
+      subnetIds:
+        - Ref: ServerlessSubnetA
+        - Ref: ServerlessSubnetB
+        - Ref: ServerlessSubnetC
 
 resources:
   Resources:
