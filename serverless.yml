@@ -38,6 +38,7 @@ provider:
     POSTGRES_PORT: { "Fn::GetAtt": [ ServerlessRDSCluster, "Endpoint.Port" ] }
     REDIS_HOST: { "Fn::GetAtt": [ ServerlessElasticacheCluster, "RedisEndpoint.Address" ] }
     REDIS_PORT: { "Fn::GetAtt": [ ServerlessElasticacheCluster, "RedisEndpoint.Port" ] }
+    BERTLY_API_KEY: ${ssm:/bertly/dev/api-key~true}
 
 functions:
   app:
