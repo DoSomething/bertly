@@ -105,8 +105,8 @@ resources:
           SourceSecurityGroupId:
             Ref: ServerlessSecurityGroup
         - IpProtocol: tcp
-          FromPort: '11211'
-          ToPort: '11211'
+          FromPort: '6379'
+          ToPort: '6379'
           SourceSecurityGroupId:
             Ref: ServerlessSecurityGroup
     ServerlessRDSSubnetGroup:
