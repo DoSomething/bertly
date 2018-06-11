@@ -36,6 +36,9 @@ provider:
   environment:
     POSTGRESQL_HOST: { "Fn::GetAtt": [ ServerlessRDSCluster, "Endpoint.Address" ] }
     POSTGRESQL_PORT: { "Fn::GetAtt": [ ServerlessRDSCluster, "Endpoint.Port" ] }
+    POSTGRESQL_USER: ${ssm:/bertly/dev/postgres-user}
+    POSTGRESQL_PASSWORD: ${ssm:/bertly/dev/postgres-password~true}
+    POSTGRESQL_DB: 'bertly_clicks'
     REDIS_HOST: { "Fn::GetAtt": [ ServerlessElasticacheCluster, "RedisEndpoint.Address" ] }
     REDIS_PORT: { "Fn::GetAtt": [ ServerlessElasticacheCluster, "RedisEndpoint.Port" ] }
     BERTLY_API_KEY: ${ssm:/bertly/dev/api-key~true}
