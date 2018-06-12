@@ -9,6 +9,7 @@
   "scripts": {
     "start": "serverless wsgi serve",
     "deploy:dev": "serverless deploy --aws-profile serverless-dev --stage dev",
+    "deploy:qa": "serverless deploy --aws-profile serverless-dev --stage qa",
     "deploy:prod": "serverless deploy --aws-profile serverless-production --stage prod",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
