@@ -8,8 +8,9 @@
   "main": "index.js",
   "scripts": {
     "start": "serverless wsgi serve",
-    "deploy:dev": "serverless --aws-profile serverless-dev deploy",
-    "deploy:prod": "serverless --aws-profile serverless-production deploy",
+    "deploy:dev": "serverless deploy --aws-profile serverless-dev --stage dev",
+    "deploy:qa": "serverless deploy --aws-profile serverless-dev --stage qa",
+    "deploy:prod": "serverless deploy --aws-profile serverless-production --stage prod",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -27,7 +28,6 @@
     "serverless-wsgi": "^1.3.0"
   },
   "dependencies": {
-    "serverless": "^1.27.2",
-    "serverless-dynamodb-local": "^0.2.30"
+    "serverless": "^1.27.2"
   }
 }
