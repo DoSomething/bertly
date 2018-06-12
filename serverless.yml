@@ -18,9 +18,9 @@ custom:
   customDomain:
     domainName: dosome.click
     basePath: ''
-    stage: ${self:provider.stage}
+    stage: ${opt:stage}
     createRoute53Record: true
-    enabled: ${self:custom.domainEnabled.${opt:stage, self:provider.stage}}
+    enabled: ${self:custom.domainEnabled.${opt:stage}}
 
 package:
   exclude:
@@ -30,12 +30,11 @@ package:
 provider:
   name: aws
   runtime: python2.7
-  stage: dev
   region: us-east-1
   environment:
-    BERTLY_API_KEY: ${ssm:/bertly/dev/api-key~true}
-    POSTGRESQL_USER: ${ssm:/bertly/dev/postgres-user}
-    POSTGRESQL_PASSWORD: ${ssm:/bertly/dev/postgres-password~true}
+    BERTLY_API_KEY: ${ssm:/bertly/${opt:stage}/api-key~true}
+    POSTGRESQL_USER: ${ssm:/bertly/${opt:stage}/postgres-user}
+    POSTGRESQL_PASSWORD: ${ssm:/bertly/${opt:stage}/postgres-password~true}
     POSTGRESQL_DB: 'bertly_clicks'
     POSTGRESQL_HOST:
       'Fn::GetAtt': [ServerlessRDSCluster, 'Endpoint.Address']
@@ -134,8 +133,8 @@ resources:
         DBName: 'bertly_clicks'
         AllocatedStorage: 10
         DBInstanceClass: db.t2.small
-        MasterUsername: ${ssm:/bertly/dev/postgres-user}
-        MasterUserPassword: ${ssm:/bertly/dev/postgres-password~true}
+        MasterUsername: ${ssm:/bertly/${opt:stage}/postgres-user}
+        MasterUserPassword: ${ssm:/bertly/${opt:stage}/postgres-password~true}
         VPCSecurityGroups:
         - 'Fn::GetAtt': ServerlessStorageSecurityGroup.GroupId
         DBSubnetGroupName:

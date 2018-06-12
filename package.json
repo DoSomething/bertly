@@ -8,8 +8,8 @@
   "main": "index.js",
   "scripts": {
     "start": "serverless wsgi serve",
-    "deploy:dev": "serverless --aws-profile serverless-dev deploy",
-    "deploy:prod": "serverless --aws-profile serverless-production deploy",
+    "deploy:dev": "serverless deploy --aws-profile serverless-dev --stage dev",
+    "deploy:prod": "serverless deploy --aws-profile serverless-production --stage prod",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
