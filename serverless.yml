@@ -37,20 +37,20 @@ provider:
     POSTGRESQL_PASSWORD: ${ssm:/bertly/${opt:stage}/postgres-password~true}
     POSTGRESQL_DB: 'bertly_clicks'
     POSTGRESQL_HOST:
-      'Fn::GetAtt': [ServerlessRDSCluster, 'Endpoint.Address']
+      'Fn::GetAtt': [BertlyRDSCluster, 'Endpoint.Address']
     POSTGRESQL_PORT:
-      'Fn::GetAtt': [ServerlessRDSCluster, 'Endpoint.Port']
+      'Fn::GetAtt': [BertlyRDSCluster, 'Endpoint.Port']
     REDIS_HOST:
-      'Fn::GetAtt': [ServerlessElasticacheCluster, 'RedisEndpoint.Address']
+      'Fn::GetAtt': [BertlyElasticacheCluster, 'RedisEndpoint.Address']
     REDIS_PORT:
-      'Fn::GetAtt': [ServerlessElasticacheCluster, 'RedisEndpoint.Port']
+      'Fn::GetAtt': [BertlyElasticacheCluster, 'RedisEndpoint.Port']
   vpc:
     securityGroupIds:
-      - 'Fn::GetAtt': ServerlessSecurityGroup.GroupId
+      - 'Fn::GetAtt': BertlySecurityGroup.GroupId
     subnetIds:
-      - Ref: ServerlessSubnetA
-      - Ref: ServerlessSubnetB
-      - Ref: ServerlessSubnetC
+      - Ref: BertlySubnetA
+      - Ref: BertlySubnetB
+      - Ref: BertlySubnetC
 
 functions:
   app:
@@ -63,69 +63,69 @@ functions:
 
 resources:
   Resources:
-    ServerlessVPC:
+    BertlyVPC:
       Type: AWS::EC2::VPC
       Properties:
         CidrBlock: '10.0.0.0/16'
-    ServerlessSubnetA:
-      DependsOn: ServerlessVPC
+    BertlySubnetA:
+      DependsOn: BertlyVPC
       Type: AWS::EC2::Subnet
       Properties:
         VpcId:
-          Ref: ServerlessVPC
+          Ref: BertlyVPC
         AvailabilityZone: ${self:provider.region}a
         CidrBlock: '10.0.0.0/24'
-    ServerlessSubnetB:
-      DependsOn: ServerlessVPC
+    BertlySubnetB:
+      DependsOn: BertlyVPC
       Type: AWS::EC2::Subnet
       Properties:
         VpcId:
-          Ref: ServerlessVPC
+          Ref: BertlyVPC
         AvailabilityZone: ${self:provider.region}c
         CidrBlock: '10.0.1.0/24'
-    ServerlessSubnetC:
-      DependsOn: ServerlessVPC
+    BertlySubnetC:
+      DependsOn: BertlyVPC
       Type: AWS::EC2::Subnet
       Properties:
         VpcId:
-          Ref: ServerlessVPC
+          Ref: BertlyVPC
         AvailabilityZone: ${self:provider.region}d
         CidrBlock: '10.0.2.0/24'
-    ServerlessSecurityGroup:
-      DependsOn: ServerlessVPC
+    BertlySecurityGroup:
+      DependsOn: BertlyVPC
       Type: AWS::EC2::SecurityGroup
       Properties:
-        GroupDescription: SecurityGroup for Serverless Functions
+        GroupDescription: SecurityGroup for Bertly Functions
         VpcId:
-          Ref: ServerlessVPC
-    ServerlessStorageSecurityGroup:
-      DependsOn: ServerlessVPC
+          Ref: BertlyVPC
+    BertlyStorageSecurityGroup:
+      DependsOn: BertlyVPC
       Type: AWS::EC2::SecurityGroup
       Properties:
-        GroupDescription: Ingress for Serverless Redis & RDS
+        GroupDescription: Ingress for Bertly Redis & RDS
         VpcId:
-          Ref: ServerlessVPC
+          Ref: BertlyVPC
         SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: '5432'
           ToPort: '5432'
           SourceSecurityGroupId:
-            Ref: ServerlessSecurityGroup
+            Ref: BertlySecurityGroup
         - IpProtocol: tcp
           FromPort: '6379'
           ToPort: '6379'
           SourceSecurityGroupId:
-            Ref: ServerlessSecurityGroup
-    ServerlessRDSSubnetGroup:
+            Ref: BertlySecurityGroup
+    BertlyRDSSubnetGroup:
       Type: AWS::RDS::DBSubnetGroup
       Properties:
         DBSubnetGroupDescription: 'RDS Subnet Group'
         SubnetIds:
-        - Ref: ServerlessSubnetA
-        - Ref: ServerlessSubnetB
-        - Ref: ServerlessSubnetC
-    ServerlessRDSCluster:
-      DependsOn: ServerlessStorageSecurityGroup
+        - Ref: BertlySubnetA
+        - Ref: BertlySubnetB
+        - Ref: BertlySubnetC
+    BertlyRDSCluster:
+      DependsOn: BertlyStorageSecurityGroup
       Type: AWS::RDS::DBInstance
       Properties:
         Engine: Postgres 
@@ -136,25 +136,25 @@ resources:
         MasterUsername: ${ssm:/bertly/${opt:stage}/postgres-user}
         MasterUserPassword: ${ssm:/bertly/${opt:stage}/postgres-password~true}
         VPCSecurityGroups:
-        - 'Fn::GetAtt': ServerlessStorageSecurityGroup.GroupId
+        - 'Fn::GetAtt': BertlyStorageSecurityGroup.GroupId
         DBSubnetGroupName:
-          Ref: ServerlessRDSSubnetGroup
-    ServerlessElasticacheSubnetGroup:
+          Ref: BertlyRDSSubnetGroup
+    BertlyElasticacheSubnetGroup:
       Type: AWS::ElastiCache::SubnetGroup
       Properties:
         Description: 'Cache Subnet Group'
         SubnetIds:
-        - Ref: ServerlessSubnetA
-        - Ref: ServerlessSubnetB
-        - Ref: ServerlessSubnetC
-    ServerlessElasticacheCluster:
-      DependsOn: ServerlessStorageSecurityGroup
+        - Ref: BertlySubnetA
+        - Ref: BertlySubnetB
+        - Ref: BertlySubnetC
+    BertlyElasticacheCluster:
+      DependsOn: BertlyStorageSecurityGroup
       Type: AWS::ElastiCache::CacheCluster
       Properties:
         Engine: redis
         NumCacheNodes: 1
         CacheNodeType: cache.r4.large
         VpcSecurityGroupIds:
-        - 'Fn::GetAtt': ServerlessStorageSecurityGroup.GroupId
+        - 'Fn::GetAtt': BertlyStorageSecurityGroup.GroupId
         CacheSubnetGroupName:
-          Ref: ServerlessElasticacheSubnetGroup
+          Ref: BertlyElasticacheSubnetGroup
