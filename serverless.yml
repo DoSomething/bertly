@@ -2,9 +2,8 @@ service: bertly
 
 plugins:
   - serverless-python-requirements
-  - serverless-wsgi
-  - serverless-dynamodb-local
   - serverless-domain-manager
+  - serverless-wsgi
 
 custom:
   domainEnabled:
@@ -34,17 +33,21 @@ provider:
   stage: dev
   region: us-east-1
   environment:
-    POSTGRESQL_HOST: { "Fn::GetAtt": [ ServerlessRDSCluster, "Endpoint.Address" ] }
-    POSTGRESQL_PORT: { "Fn::GetAtt": [ ServerlessRDSCluster, "Endpoint.Port" ] }
+    BERTLY_API_KEY: ${ssm:/bertly/dev/api-key~true}
     POSTGRESQL_USER: ${ssm:/bertly/dev/postgres-user}
     POSTGRESQL_PASSWORD: ${ssm:/bertly/dev/postgres-password~true}
     POSTGRESQL_DB: 'bertly_clicks'
-    REDIS_HOST: { "Fn::GetAtt": [ ServerlessElasticacheCluster, "RedisEndpoint.Address" ] }
-    REDIS_PORT: { "Fn::GetAtt": [ ServerlessElasticacheCluster, "RedisEndpoint.Port" ] }
-    BERTLY_API_KEY: ${ssm:/bertly/dev/api-key~true}
+    POSTGRESQL_HOST:
+      'Fn::GetAtt': [ServerlessRDSCluster, 'Endpoint.Address']
+    POSTGRESQL_PORT:
+      'Fn::GetAtt': [ServerlessRDSCluster, 'Endpoint.Port']
+    REDIS_HOST:
+      'Fn::GetAtt': [ServerlessElasticacheCluster, 'RedisEndpoint.Address']
+    REDIS_PORT:
+      'Fn::GetAtt': [ServerlessElasticacheCluster, 'RedisEndpoint.Port']
   vpc:
     securityGroupIds:
-      - "Fn::GetAtt": ServerlessSecurityGroup.GroupId
+      - 'Fn::GetAtt': ServerlessSecurityGroup.GroupId
     subnetIds:
       - Ref: ServerlessSubnetA
       - Ref: ServerlessSubnetB
@@ -64,7 +67,7 @@ resources:
     ServerlessVPC:
       Type: AWS::EC2::VPC
       Properties:
-        CidrBlock: "10.0.0.0/16"
+        CidrBlock: '10.0.0.0/16'
     ServerlessSubnetA:
       DependsOn: ServerlessVPC
       Type: AWS::EC2::Subnet
@@ -72,7 +75,7 @@ resources:
         VpcId:
           Ref: ServerlessVPC
         AvailabilityZone: ${self:provider.region}a
-        CidrBlock: "10.0.0.0/24"
+        CidrBlock: '10.0.0.0/24'
     ServerlessSubnetB:
       DependsOn: ServerlessVPC
       Type: AWS::EC2::Subnet
@@ -80,7 +83,7 @@ resources:
         VpcId:
           Ref: ServerlessVPC
         AvailabilityZone: ${self:provider.region}c
-        CidrBlock: "10.0.1.0/24"
+        CidrBlock: '10.0.1.0/24'
     ServerlessSubnetC:
       DependsOn: ServerlessVPC
       Type: AWS::EC2::Subnet
@@ -88,7 +91,7 @@ resources:
         VpcId:
           Ref: ServerlessVPC
         AvailabilityZone: ${self:provider.region}d
-        CidrBlock: "10.0.2.0/24"
+        CidrBlock: '10.0.2.0/24'
     ServerlessSecurityGroup:
       DependsOn: ServerlessVPC
       Type: AWS::EC2::SecurityGroup
@@ -117,7 +120,7 @@ resources:
     ServerlessRDSSubnetGroup:
       Type: AWS::RDS::DBSubnetGroup
       Properties:
-        DBSubnetGroupDescription: "RDS Subnet Group"
+        DBSubnetGroupDescription: 'RDS Subnet Group'
         SubnetIds:
         - Ref: ServerlessSubnetA
         - Ref: ServerlessSubnetB
@@ -134,13 +137,13 @@ resources:
         MasterUsername: ${ssm:/bertly/dev/postgres-user}
         MasterUserPassword: ${ssm:/bertly/dev/postgres-password~true}
         VPCSecurityGroups:
-        - "Fn::GetAtt": ServerlessStorageSecurityGroup.GroupId
+        - 'Fn::GetAtt': ServerlessStorageSecurityGroup.GroupId
         DBSubnetGroupName:
           Ref: ServerlessRDSSubnetGroup
     ServerlessElasticacheSubnetGroup:
       Type: AWS::ElastiCache::SubnetGroup
       Properties:
-        Description: "Cache Subnet Group"
+        Description: 'Cache Subnet Group'
         SubnetIds:
         - Ref: ServerlessSubnetA
         - Ref: ServerlessSubnetB
@@ -153,6 +156,6 @@ resources:
         NumCacheNodes: 1
         CacheNodeType: cache.r4.large
         VpcSecurityGroupIds:
-        - "Fn::GetAtt": ServerlessStorageSecurityGroup.GroupId
+        - 'Fn::GetAtt': ServerlessStorageSecurityGroup.GroupId
         CacheSubnetGroupName:
           Ref: ServerlessElasticacheSubnetGroup
