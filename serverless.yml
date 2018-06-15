@@ -131,8 +131,8 @@ resources:
         Engine: Postgres 
         EngineVersion: '10.3'
         DBName: 'bertly_clicks'
-        AllocatedStorage: 10
-        DBInstanceClass: db.t2.small
+        AllocatedStorage: 100
+        DBInstanceClass: db.t2.medium
         MasterUsername: ${ssm:/bertly/${opt:stage}/postgres-user}
         MasterUserPassword: ${ssm:/bertly/${opt:stage}/postgres-password~true}
         VPCSecurityGroups:
