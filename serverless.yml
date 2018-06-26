@@ -155,6 +155,8 @@ resources:
         Engine: redis
         NumCacheNodes: 1
         CacheNodeType: cache.r4.large
+        SnapshotArns:
+          - ${ssm:/bertly/${opt:stage}/redis-snapshot}
         VpcSecurityGroupIds:
         - 'Fn::GetAtt': BertlyStorageSecurityGroup.GroupId
         CacheSubnetGroupName:
