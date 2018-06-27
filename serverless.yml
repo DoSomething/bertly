@@ -155,6 +155,8 @@ resources:
         Engine: redis
         NumCacheNodes: 1
         CacheNodeType: cache.r4.large
+        SnapshotRetentionLimit: 14 # Keep backups for 2 weeks.
+        SnapshotWindow: '04:00-08:00' # 12AM-4AM EST
         SnapshotArns:
           - ${ssm:/bertly/${opt:stage}/redis-snapshot}
         VpcSecurityGroupIds:
