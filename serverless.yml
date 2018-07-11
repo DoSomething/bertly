@@ -34,6 +34,7 @@ provider:
   region: us-east-1
   environment:
     BERTLY_API_KEY: ${ssm:/bertly/${opt:stage}/api-key~true}
+    COMPOSE_REDIS_URL: ${ssm:/bertly/${opt:stage}/redis-url~true}
     POSTGRESQL_USER: ${ssm:/bertly/${opt:stage}/postgres-user}
     POSTGRESQL_PASSWORD: ${ssm:/bertly/${opt:stage}/postgres-password~true}
     POSTGRESQL_DB: 'bertly_clicks'
@@ -41,10 +42,6 @@ provider:
       'Fn::GetAtt': [BertlyRDSCluster, 'Endpoint.Address']
     POSTGRESQL_PORT:
       'Fn::GetAtt': [BertlyRDSCluster, 'Endpoint.Port']
-    REDIS_HOST:
-      'Fn::GetAtt': [BertlyElasticacheCluster, 'RedisEndpoint.Address']
-    REDIS_PORT:
-      'Fn::GetAtt': [BertlyElasticacheCluster, 'RedisEndpoint.Port']
   vpc:
     securityGroupIds:
       - 'Fn::GetAtt': BertlySecurityGroup.GroupId
@@ -140,26 +137,3 @@ resources:
         - 'Fn::GetAtt': BertlyStorageSecurityGroup.GroupId
         DBSubnetGroupName:
           Ref: BertlyRDSSubnetGroup
-    BertlyElasticacheSubnetGroup:
-      Type: AWS::ElastiCache::SubnetGroup
-      Properties:
-        Description: 'Cache Subnet Group'
-        SubnetIds:
-        - Ref: BertlySubnetA
-        - Ref: BertlySubnetB
-        - Ref: BertlySubnetC
-    BertlyElasticacheCluster:
-      DependsOn: BertlyStorageSecurityGroup
-      Type: AWS::ElastiCache::CacheCluster
-      Properties:
-        Engine: redis
-        NumCacheNodes: 1
-        CacheNodeType: cache.r4.large
-        SnapshotRetentionLimit: 14 # Keep backups for 2 weeks.
-        SnapshotWindow: '04:00-08:00' # 12AM-4AM EST
-        SnapshotArns:
-          - ${ssm:/bertly/${opt:stage}/redis-snapshot}
-        VpcSecurityGroupIds:
-        - 'Fn::GetAtt': BertlyStorageSecurityGroup.GroupId
-        CacheSubnetGroupName:
-          Ref: BertlyElasticacheSubnetGroup
