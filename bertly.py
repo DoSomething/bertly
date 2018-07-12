@@ -159,7 +159,7 @@ def bounce(key):
     # Grab user-agent, or string 'None' if not provided.
     ua = request.headers.get('User-Agent')
     if ua is None:
-        ua = 'None' 
+        ua = 'None'
 
     # Record new click. See models.py for data definition
     click = Click(click_id=uuid4(), click_time=datetime.utcnow(),
