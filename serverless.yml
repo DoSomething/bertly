@@ -46,9 +46,10 @@ provider:
     securityGroupIds:
       - 'Fn::GetAtt': BertlySecurityGroup.GroupId
     subnetIds:
-      - Ref: BertlySubnetA
-      - Ref: BertlySubnetB
-      - Ref: BertlySubnetC
+      - Ref: BertlyRDSSubnetA
+      - Ref: BertlyRDSSubnetB
+      - Ref: BertlyRDSSubnetC
+      - Ref: BertlyPrivateSubnetA
 
 functions:
   app:
@@ -65,7 +66,69 @@ resources:
       Type: AWS::EC2::VPC
       Properties:
         CidrBlock: '10.0.0.0/16'
-    BertlySubnetA:
+    BertlyElasticIpLambda:
+      Type: AWS::EC2::EIP
+      Properties:
+        Domain: vpc
+    BertlyInternetGatewayLambda:
+      Type: AWS::EC2::InternetGateway
+    BertlyVPCGatewayAttachmentLambda:
+      Type: AWS::EC2::VPCGatewayAttachment
+      Properties:
+        VpcId:
+          Ref: BertlyVPC
+        InternetGatewayId:
+          Ref: BertlyInternetGatewayLambda
+    BertlyNatGatewayLambda:
+      Type: AWS::EC2::NatGateway
+      Properties:
+        AllocationId:
+          Fn::GetAtt:
+            - BertlyElasticIpLambda
+            - AllocationId
+        SubnetId:
+          Ref: BertlyPublicSubnetA
+    BertlyPrivateRouteTable:
+      Type: AWS::EC2::RouteTable
+      Properties:
+        VpcId:
+          Ref: BertlyVPC 
+    BertlyPrivateRoute:
+      Type: AWS::EC2::Route
+      Properties:
+        RouteTableId:
+          Ref: BertlyPrivateRouteTable
+        DestinationCidrBlock: 0.0.0.0/0
+        NatGatewayId:
+          Ref: BertlyNatGatewayLambda
+    BertlyPublicRouteTable:
+      Type: AWS::EC2::RouteTable
+      Properties:
+        VpcId:
+          Ref: BertlyVPC
+    BertlyPublicRoute:
+      Type: AWS::EC2::Route
+      Properties:
+        RouteTableId:
+          Ref: BertlyPublicRouteTable
+        DestinationCidrBlock: 0.0.0.0/0
+        GatewayId:
+          Ref: BertlyInternetGatewayLambda
+    SubnetRouteTableAssociationLambdaPrivateA:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId:
+          Ref: BertlyPrivateSubnetA
+        RouteTableId:
+          Ref: BertlyPrivateRouteTable
+    SubnetRouteTableAssociationLambdaPublicA:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId:
+          Ref: BertlyPublicSubnetA
+        RouteTableId:
+          Ref: BertlyPublicRouteTable
+    BertlyRDSSubnetA:
       DependsOn: BertlyVPC
       Type: AWS::EC2::Subnet
       Properties:
@@ -73,7 +136,7 @@ resources:
           Ref: BertlyVPC
         AvailabilityZone: ${self:provider.region}a
         CidrBlock: '10.0.0.0/24'
-    BertlySubnetB:
+    BertlyRDSSubnetB:
       DependsOn: BertlyVPC
       Type: AWS::EC2::Subnet
       Properties:
@@ -81,7 +144,7 @@ resources:
           Ref: BertlyVPC
         AvailabilityZone: ${self:provider.region}c
         CidrBlock: '10.0.1.0/24'
-    BertlySubnetC:
+    BertlyRDSSubnetC:
       DependsOn: BertlyVPC
       Type: AWS::EC2::Subnet
       Properties:
@@ -89,6 +152,22 @@ resources:
           Ref: BertlyVPC
         AvailabilityZone: ${self:provider.region}d
         CidrBlock: '10.0.2.0/24'
+    BertlyPublicSubnetA:
+      DependsOn: BertlyVPC
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId:
+          Ref: BertlyVPC
+        AvailabilityZone: ${self:provider.region}d
+        CidrBlock: '10.0.3.0/24'
+    BertlyPrivateSubnetA:
+      DependsOn: BertlyVPC
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId:
+          Ref: BertlyVPC
+        AvailabilityZone: ${self:provider.region}d
+        CidrBlock: '10.0.4.0/24'
     BertlySecurityGroup:
       DependsOn: BertlyVPC
       Type: AWS::EC2::SecurityGroup
@@ -105,13 +184,9 @@ resources:
           Ref: BertlyVPC
         SecurityGroupIngress:
         - IpProtocol: tcp
+          Description: 'Allow access to RDS Postgres database.'
           FromPort: '5432'
           ToPort: '5432'
-          SourceSecurityGroupId:
-            Ref: BertlySecurityGroup
-        - IpProtocol: tcp
-          FromPort: '6379'
-          ToPort: '6379'
           SourceSecurityGroupId:
             Ref: BertlySecurityGroup
     BertlyRDSSubnetGroup:
@@ -119,9 +194,9 @@ resources:
       Properties:
         DBSubnetGroupDescription: 'RDS Subnet Group'
         SubnetIds:
-        - Ref: BertlySubnetA
-        - Ref: BertlySubnetB
-        - Ref: BertlySubnetC
+        - Ref: BertlyRDSSubnetA
+        - Ref: BertlyRDSSubnetB
+        - Ref: BertlyRDSSubnetC
     BertlyRDSCluster:
       DependsOn: BertlyStorageSecurityGroup
       Type: AWS::RDS::DBInstance
