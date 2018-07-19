@@ -39,12 +39,12 @@ provider:
     POSTGRESQL_PASSWORD: ${ssm:/bertly/${opt:stage}/postgres-password~true}
     POSTGRESQL_DB: 'bertly_clicks'
     POSTGRESQL_HOST:
-      'Fn::GetAtt': [BertlyRDSCluster, 'Endpoint.Address']
+      Fn::GetAtt: [BertlyRDSCluster, 'Endpoint.Address']
     POSTGRESQL_PORT:
-      'Fn::GetAtt': [BertlyRDSCluster, 'Endpoint.Port']
+      Fn::GetAtt: [BertlyRDSCluster, 'Endpoint.Port']
   vpc:
     securityGroupIds:
-      - 'Fn::GetAtt': BertlySecurityGroup.GroupId
+      - Fn::GetAtt: BertlySecurityGroup.GroupId
     subnetIds:
       - Ref: BertlyPrivateSubnetA
 
@@ -80,9 +80,7 @@ resources:
       Type: AWS::EC2::NatGateway
       Properties:
         AllocationId:
-          Fn::GetAtt:
-            - BertlyElasticIpLambda
-            - AllocationId
+          Fn::GetAtt: BertlyElasticIpLambda.AllocationId
         SubnetId:
           Ref: BertlyPublicSubnetA
     BertlyPrivateRouteTable:
@@ -206,6 +204,6 @@ resources:
         MasterUsername: ${ssm:/bertly/${opt:stage}/postgres-user}
         MasterUserPassword: ${ssm:/bertly/${opt:stage}/postgres-password~true}
         VPCSecurityGroups:
-        - 'Fn::GetAtt': BertlyStorageSecurityGroup.GroupId
+        - Fn::GetAtt: BertlyStorageSecurityGroup.GroupId
         DBSubnetGroupName:
           Ref: BertlyRDSSubnetGroup
