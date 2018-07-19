@@ -46,9 +46,6 @@ provider:
     securityGroupIds:
       - 'Fn::GetAtt': BertlySecurityGroup.GroupId
     subnetIds:
-      - Ref: BertlyRDSSubnetA
-      - Ref: BertlyRDSSubnetB
-      - Ref: BertlyRDSSubnetC
       - Ref: BertlyPrivateSubnetA
 
 functions:
