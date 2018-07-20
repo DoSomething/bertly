@@ -63,24 +63,37 @@ resources:
       Type: AWS::EC2::VPC
       Properties:
         CidrBlock: '10.0.0.0/16'
-    BertlyElasticIpLambda:
+    BertlyElasticIp:
       Type: AWS::EC2::EIP
       Properties:
         Domain: vpc
-    BertlyInternetGatewayLambda:
+    BertlyInternetGateway:
       Type: AWS::EC2::InternetGateway
-    BertlyVPCGatewayAttachmentLambda:
+    BertlyVPCGatewayAttachment:
       Type: AWS::EC2::VPCGatewayAttachment
       Properties:
         VpcId:
           Ref: BertlyVPC
         InternetGatewayId:
-          Ref: BertlyInternetGatewayLambda
-    BertlyNatGatewayLambda:
+          Ref: BertlyInternetGateway
+    BertlyPublicRouteTable:
+      Type: AWS::EC2::RouteTable
+      Properties:
+        VpcId:
+          Ref: BertlyVPC
+    BertlyPublicRoute:
+      Type: AWS::EC2::Route
+      Properties:
+        RouteTableId:
+          Ref: BertlyPublicRouteTable
+        DestinationCidrBlock: 0.0.0.0/0
+        GatewayId:
+          Ref: BertlyInternetGateway
+    BertlyNatGateway:
       Type: AWS::EC2::NatGateway
       Properties:
         AllocationId:
-          Fn::GetAtt: BertlyElasticIpLambda.AllocationId
+          Fn::GetAtt: BertlyElasticIp.AllocationId
         SubnetId:
           Ref: BertlyPublicSubnetA
     BertlyPrivateRouteTable:
@@ -95,74 +108,45 @@ resources:
           Ref: BertlyPrivateRouteTable
         DestinationCidrBlock: 0.0.0.0/0
         NatGatewayId:
-          Ref: BertlyNatGatewayLambda
-    BertlyPublicRouteTable:
-      Type: AWS::EC2::RouteTable
-      Properties:
-        VpcId:
-          Ref: BertlyVPC
-    BertlyPublicRoute:
-      Type: AWS::EC2::Route
-      Properties:
-        RouteTableId:
-          Ref: BertlyPublicRouteTable
-        DestinationCidrBlock: 0.0.0.0/0
-        GatewayId:
-          Ref: BertlyInternetGatewayLambda
-    SubnetRouteTableAssociationLambdaPrivateA:
-      Type: AWS::EC2::SubnetRouteTableAssociation
-      Properties:
-        SubnetId:
-          Ref: BertlyPrivateSubnetA
-        RouteTableId:
-          Ref: BertlyPrivateRouteTable
-    SubnetRouteTableAssociationLambdaPublicA:
+          Ref: BertlyNatGateway
+    BertlySubnetRouteTableAssociationPublicA:
       Type: AWS::EC2::SubnetRouteTableAssociation
       Properties:
         SubnetId:
           Ref: BertlyPublicSubnetA
         RouteTableId:
           Ref: BertlyPublicRouteTable
-    BertlyRDSSubnetA:
-      DependsOn: BertlyVPC
-      Type: AWS::EC2::Subnet
-      Properties:
-        VpcId:
-          Ref: BertlyVPC
-        AvailabilityZone: ${self:provider.region}a
-        CidrBlock: '10.0.0.0/24'
-    BertlyRDSSubnetB:
-      DependsOn: BertlyVPC
-      Type: AWS::EC2::Subnet
-      Properties:
-        VpcId:
-          Ref: BertlyVPC
-        AvailabilityZone: ${self:provider.region}c
-        CidrBlock: '10.0.1.0/24'
-    BertlyRDSSubnetC:
-      DependsOn: BertlyVPC
-      Type: AWS::EC2::Subnet
-      Properties:
-        VpcId:
-          Ref: BertlyVPC
-        AvailabilityZone: ${self:provider.region}d
-        CidrBlock: '10.0.2.0/24'
     BertlyPublicSubnetA:
       DependsOn: BertlyVPC
       Type: AWS::EC2::Subnet
       Properties:
         VpcId:
           Ref: BertlyVPC
-        AvailabilityZone: ${self:provider.region}d
-        CidrBlock: '10.0.3.0/24'
+        AvailabilityZone: ${self:provider.region}a
+        CidrBlock: '10.0.1.0/24'
+    BertlySubnetRouteTableAssociationPrivateA:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId:
+          Ref: BertlyPrivateSubnetA
+        RouteTableId:
+          Ref: BertlyPrivateRouteTable
     BertlyPrivateSubnetA:
       DependsOn: BertlyVPC
       Type: AWS::EC2::Subnet
       Properties:
         VpcId:
           Ref: BertlyVPC
-        AvailabilityZone: ${self:provider.region}d
-        CidrBlock: '10.0.4.0/24'
+        AvailabilityZone: ${self:provider.region}a
+        CidrBlock: '10.0.2.0/24'
+    BertlyPrivateSubnetB:
+      DependsOn: BertlyVPC
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId:
+          Ref: BertlyVPC
+        AvailabilityZone: ${self:provider.region}b
+        CidrBlock: '10.0.3.0/24'
     BertlySecurityGroup:
       DependsOn: BertlyVPC
       Type: AWS::EC2::SecurityGroup
@@ -189,9 +173,8 @@ resources:
       Properties:
         DBSubnetGroupDescription: 'RDS Subnet Group'
         SubnetIds:
-        - Ref: BertlyRDSSubnetA
-        - Ref: BertlyRDSSubnetB
-        - Ref: BertlyRDSSubnetC
+        - Ref: BertlyPrivateSubnetA
+        - Ref: BertlyPrivateSubnetB
     BertlyRDSCluster:
       DependsOn: BertlyStorageSecurityGroup
       Type: AWS::RDS::DBInstance
