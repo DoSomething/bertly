@@ -20,7 +20,8 @@ custom:
     basePath: ''
     stage: ${opt:stage}
     createRoute53Record: true
-    enabled: ${self:custom.domainEnabled.${opt:stage}}
+    enabled: false
+    # enabled: ${self:custom.domainEnabled.${opt:stage}}
 
 package:
   exclude:
@@ -33,24 +34,19 @@ provider:
   region: us-east-1
   environment:
     BERTLY_API_KEY: ${ssm:/bertly/${opt:stage}/api-key~true}
+    COMPOSE_REDIS_URL: ${ssm:/bertly/${opt:stage}/redis-url~true}
     POSTGRESQL_USER: ${ssm:/bertly/${opt:stage}/postgres-user}
     POSTGRESQL_PASSWORD: ${ssm:/bertly/${opt:stage}/postgres-password~true}
     POSTGRESQL_DB: 'bertly_clicks'
     POSTGRESQL_HOST:
-      'Fn::GetAtt': [BertlyRDSCluster, 'Endpoint.Address']
+      Fn::GetAtt: [BertlyRDSCluster, 'Endpoint.Address']
     POSTGRESQL_PORT:
-      'Fn::GetAtt': [BertlyRDSCluster, 'Endpoint.Port']
-    REDIS_HOST:
-      'Fn::GetAtt': [BertlyElasticacheCluster, 'RedisEndpoint.Address']
-    REDIS_PORT:
-      'Fn::GetAtt': [BertlyElasticacheCluster, 'RedisEndpoint.Port']
+      Fn::GetAtt: [BertlyRDSCluster, 'Endpoint.Port']
   vpc:
     securityGroupIds:
-      - 'Fn::GetAtt': BertlySecurityGroup.GroupId
+      - Fn::GetAtt: BertlySecurityGroup.GroupId
     subnetIds:
-      - Ref: BertlySubnetA
-      - Ref: BertlySubnetB
-      - Ref: BertlySubnetC
+      - Ref: BertlyPrivateSubnetA
 
 functions:
   app:
@@ -67,30 +63,90 @@ resources:
       Type: AWS::EC2::VPC
       Properties:
         CidrBlock: '10.0.0.0/16'
-    BertlySubnetA:
+    BertlyElasticIp:
+      Type: AWS::EC2::EIP
+      Properties:
+        Domain: vpc
+    BertlyInternetGateway:
+      Type: AWS::EC2::InternetGateway
+    BertlyVPCGatewayAttachment:
+      Type: AWS::EC2::VPCGatewayAttachment
+      Properties:
+        VpcId:
+          Ref: BertlyVPC
+        InternetGatewayId:
+          Ref: BertlyInternetGateway
+    BertlyPublicRouteTable:
+      Type: AWS::EC2::RouteTable
+      Properties:
+        VpcId:
+          Ref: BertlyVPC
+    BertlyPublicRoute:
+      Type: AWS::EC2::Route
+      Properties:
+        RouteTableId:
+          Ref: BertlyPublicRouteTable
+        DestinationCidrBlock: 0.0.0.0/0
+        GatewayId:
+          Ref: BertlyInternetGateway
+    BertlyNatGateway:
+      Type: AWS::EC2::NatGateway
+      Properties:
+        AllocationId:
+          Fn::GetAtt: BertlyElasticIp.AllocationId
+        SubnetId:
+          Ref: BertlyPublicSubnetA
+    BertlyPrivateRouteTable:
+      Type: AWS::EC2::RouteTable
+      Properties:
+        VpcId:
+          Ref: BertlyVPC 
+    BertlyPrivateRoute:
+      Type: AWS::EC2::Route
+      Properties:
+        RouteTableId:
+          Ref: BertlyPrivateRouteTable
+        DestinationCidrBlock: 0.0.0.0/0
+        NatGatewayId:
+          Ref: BertlyNatGateway
+    BertlySubnetRouteTableAssociationPublicA:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId:
+          Ref: BertlyPublicSubnetA
+        RouteTableId:
+          Ref: BertlyPublicRouteTable
+    BertlyPublicSubnetA:
       DependsOn: BertlyVPC
       Type: AWS::EC2::Subnet
       Properties:
         VpcId:
           Ref: BertlyVPC
         AvailabilityZone: ${self:provider.region}a
-        CidrBlock: '10.0.0.0/24'
-    BertlySubnetB:
-      DependsOn: BertlyVPC
-      Type: AWS::EC2::Subnet
-      Properties:
-        VpcId:
-          Ref: BertlyVPC
-        AvailabilityZone: ${self:provider.region}c
         CidrBlock: '10.0.1.0/24'
-    BertlySubnetC:
+    BertlySubnetRouteTableAssociationPrivateA:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId:
+          Ref: BertlyPrivateSubnetA
+        RouteTableId:
+          Ref: BertlyPrivateRouteTable
+    BertlyPrivateSubnetA:
       DependsOn: BertlyVPC
       Type: AWS::EC2::Subnet
       Properties:
         VpcId:
           Ref: BertlyVPC
-        AvailabilityZone: ${self:provider.region}d
+        AvailabilityZone: ${self:provider.region}a
         CidrBlock: '10.0.2.0/24'
+    BertlyPrivateSubnetB:
+      DependsOn: BertlyVPC
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId:
+          Ref: BertlyVPC
+        AvailabilityZone: ${self:provider.region}b
+        CidrBlock: '10.0.3.0/24'
     BertlySecurityGroup:
       DependsOn: BertlyVPC
       Type: AWS::EC2::SecurityGroup
@@ -107,13 +163,9 @@ resources:
           Ref: BertlyVPC
         SecurityGroupIngress:
         - IpProtocol: tcp
+          Description: 'Allow access to RDS Postgres database.'
           FromPort: '5432'
           ToPort: '5432'
-          SourceSecurityGroupId:
-            Ref: BertlySecurityGroup
-        - IpProtocol: tcp
-          FromPort: '6379'
-          ToPort: '6379'
           SourceSecurityGroupId:
             Ref: BertlySecurityGroup
     BertlyRDSSubnetGroup:
@@ -121,9 +173,8 @@ resources:
       Properties:
         DBSubnetGroupDescription: 'RDS Subnet Group'
         SubnetIds:
-        - Ref: BertlySubnetA
-        - Ref: BertlySubnetB
-        - Ref: BertlySubnetC
+        - Ref: BertlyPrivateSubnetA
+        - Ref: BertlyPrivateSubnetB
     BertlyRDSCluster:
       DependsOn: BertlyStorageSecurityGroup
       Type: AWS::RDS::DBInstance
@@ -136,25 +187,6 @@ resources:
         MasterUsername: ${ssm:/bertly/${opt:stage}/postgres-user}
         MasterUserPassword: ${ssm:/bertly/${opt:stage}/postgres-password~true}
         VPCSecurityGroups:
-        - 'Fn::GetAtt': BertlyStorageSecurityGroup.GroupId
+        - Fn::GetAtt: BertlyStorageSecurityGroup.GroupId
         DBSubnetGroupName:
           Ref: BertlyRDSSubnetGroup
-    BertlyElasticacheSubnetGroup:
-      Type: AWS::ElastiCache::SubnetGroup
-      Properties:
-        Description: 'Cache Subnet Group'
-        SubnetIds:
-        - Ref: BertlySubnetA
-        - Ref: BertlySubnetB
-        - Ref: BertlySubnetC
-    BertlyElasticacheCluster:
-      DependsOn: BertlyStorageSecurityGroup
-      Type: AWS::ElastiCache::CacheCluster
-      Properties:
-        Engine: redis
-        NumCacheNodes: 1
-        CacheNodeType: cache.r4.large
-        VpcSecurityGroupIds:
-        - 'Fn::GetAtt': BertlyStorageSecurityGroup.GroupId
-        CacheSubnetGroupName:
-          Ref: BertlyElasticacheSubnetGroup
