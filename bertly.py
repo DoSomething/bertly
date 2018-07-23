@@ -156,9 +156,14 @@ def bounce(key):
     if url is None:
         abort(404)
 
+    # Grab user-agent, or string 'None' if not provided.
+    ua = request.headers.get('User-Agent')
+    if ua is None:
+        ua = 'None'
+
     # Record new click. See models.py for data definition
     click = Click(click_id=uuid4(), click_time=datetime.utcnow(),
-                  shortened=key, target_url=url)
+                  shortened=key, target_url=url, user_agent=ua[:255])
     db.session.add(click)
     db.session.commit()
 
