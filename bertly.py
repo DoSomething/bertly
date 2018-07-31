@@ -163,7 +163,7 @@ def bounce(key):
 
     # Record new click. See models.py for data definition
     click = Click(click_id=uuid4(), click_time=datetime.utcnow(),
-                  shortened=key, target_url=url) # , user_agent=ua[:255]
+                  shortened=key, target_url=url)  # , user_agent=ua[:255]
     db.session.add(click)
     db.session.commit()
 
