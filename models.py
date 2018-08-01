@@ -26,3 +26,4 @@ class Click(db.Model):
     click_time = db.Column(db.DateTime)
     shortened = db.Column(db.String(32))
     target_url = db.Column(db.String(255))
+    user_agent = db.Column(db.String(255))
