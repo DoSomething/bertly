@@ -20,8 +20,7 @@ custom:
     basePath: ''
     stage: ${opt:stage}
     createRoute53Record: true
-    enabled: false
-    # enabled: ${self:custom.domainEnabled.${opt:stage}}
+    enabled: ${self:custom.domainEnabled.${opt:stage}}
 
 package:
   exclude:
@@ -197,3 +196,4 @@ resources:
         - Fn::GetAtt: BertlyStorageSecurityGroup.GroupId
         DBSubnetGroupName:
           Ref: BertlyRDSSubnetGroup
+        DBParameterGroupName: 'postgres10-repl'
