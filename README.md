@@ -51,19 +51,19 @@ Default region name [None]: us-east-1
 Default output format [None]: text
 ```
 
-Then, run either `npm run deploy:dev` or `npm run deploy:prod` to deploy! (For more power, you can also install the [Serverless CLI](https://serverless.com/framework/docs/getting-started/) globally on your machine and run commands with `serverless` or `sls`).
+Then, run either `npm run deploy:dev`, `npm run deploy:qa`, or `npm run deploy:prod` to deploy! (For more power, you can also install the [Serverless CLI](https://serverless.com/framework/docs/getting-started/) globally on your machine and run commands with `serverless` or `sls`).
 
-**NOTE:** Until [#21](https://github.com/DoSomething/bertly/issues/21) is addressed, you'll need to make a small change to `serverless.yml` to deploy to prod:
+Migrations can be run by invoking the corresponding "migrate" Lambda function. For example:
 
-```diff
---- a/serverless.yml
-+++ b/serverless.yml
-@@ -21,7 +21,7 @@ custom:
-     basePath: ''
-     stage: ${self:provider.stage}
-     createRoute53Record: true
--    enabled: ${self:custom.domainEnabled.${opt:stage, self:provider.stage}}
-+    enabled: true
+```sh
+# to run migrations on dev stage:
+$ aws lambda invoke --function-name bertly-dev-migrate --profile serverless-dev /dev/null
+
+# to run migrations on qa stage:
+$ aws lambda invoke --function-name bertly-qa-migrate --profile serverless-dev /dev/null
+
+# to run migrations on production stage:
+$ aws lambda invoke --function-name bertly-prod-migrate --profile serverless-production /dev/null
 ```
 
 ## Security Vulnerabilities
