@@ -181,6 +181,14 @@ resources:
         SubnetIds:
         - Ref: BertlyPrivateSubnetA
         - Ref: BertlyPrivateSubnetB
+    BertlyQuasarDBParameterGroup:
+      Type: AWS::RDS::DBParameterGroup
+      Properties:
+        Description: 'Allow logical replication from Bertly to Quasar.'
+        Family: 'postgres10'
+        Parameters:
+          max_logical_replication_workers: 500
+          rds.logical_replication: 1
     BertlyRDSCluster:
       DependsOn: BertlyStorageSecurityGroup
       Type: AWS::RDS::DBInstance
@@ -196,4 +204,5 @@ resources:
         - Fn::GetAtt: BertlyStorageSecurityGroup.GroupId
         DBSubnetGroupName:
           Ref: BertlyRDSSubnetGroup
-        DBParameterGroupName: 'postgres10-repl'
+        DBParameterGroupName:
+          Ref: BertlyQuasarDBParameterGroup
