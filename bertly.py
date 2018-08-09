@@ -211,12 +211,13 @@ Error handlers
 
 @app.errorhandler(404)
 def page_not_found(e):
-
     # Default response code: 302
     # http://flask.pocoo.org/docs/1.0/api/#flask.redirect
     return redirect('https://next.dosomething.org/us/404')
 
-    # You could do this to serve a custom 404:
-    #
-    # app.logger.warn("Bad URL: " + request.url)
-    # return render_template('404.html'), 404
+
+@app.errorhandler(Exception)
+def handle_error(e):
+    app.logger.exception(e)
+
+    return jsonify({ 'error': 'Internal server error.' }, 500)
