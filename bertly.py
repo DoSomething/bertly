@@ -220,4 +220,4 @@ def page_not_found(e):
 def handle_error(e):
     app.logger.exception(e)
 
-    return jsonify({ 'error': 'Internal server error.' }, 500)
+    return jsonify({'error': 'Internal server error.'}, 500)
