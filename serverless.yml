@@ -3,6 +3,7 @@ service: bertly
 plugins:
   - serverless-python-requirements
   - serverless-domain-manager
+  - serverless-log-forwarding
   - serverless-wsgi
 
 custom:
@@ -21,6 +22,8 @@ custom:
     stage: ${opt:stage}
     createRoute53Record: true
     enabled: ${self:custom.domainEnabled.${opt:stage}}
+  logForwarding:
+    destinationARN: ${cf:lambda-papertrail-${opt:stage}.ForwarderLambdaArn}
 
 package:
   exclude:
