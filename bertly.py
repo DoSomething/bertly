@@ -55,8 +55,8 @@ redis_client = redis.StrictRedis(
     password=parsed.password,
     ssl=ssl_wanted,
     decode_responses=True,
-    socket_connect_timeout=1.0,
-    socket_timeout=1.0)
+    socket_connect_timeout=5.0,
+    socket_timeout=5.0)
 
 # Configure PostgreSQL/SQLAlchemy connection:
 app.config['SQLALCHEMY_DATABASE_URI'] = config.POSTGRES_URL
