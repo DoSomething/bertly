@@ -36,6 +36,8 @@ provider:
   region: us-east-1
   environment:
     BERTLY_API_KEY: ${ssm:/bertly/${opt:stage}/api-key~true}
+    BERTLY_API_KEY_NAME: 'X-BERTLY-API-KEY'
+    CLICK_TABLE: 'clicks'
     COMPOSE_REDIS_URL: ${ssm:/bertly/${opt:stage}/redis-url~true}
     POSTGRESQL_USER: ${ssm:/bertly/${opt:stage}/postgres-user}
     POSTGRESQL_PASSWORD: ${ssm:/bertly/${opt:stage}/postgres-password~true}
