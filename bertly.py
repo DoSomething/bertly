@@ -99,8 +99,8 @@ def jsonify(obj, status_code=200):
 
 
 def valid_url(url):
-    return bool(parse(url, rule='URI_reference'))
-
+    parsed = urlparse(url)
+    return all([parsed.scheme, parsed.netloc])
 
 def require_api_key(view_function):
     """Decorator to require API key in header, passed as api_key_label"""
@@ -138,13 +138,13 @@ def shorten():
     url = request.form['url'].strip()
 
     if not valid_url(url):
-        return jsonify({'error': str(e)}, 400)
+        return jsonify({'error': 'Invalid URL.'}, 400)
 
     key = get_key_for_url(url)
     url = url_for('bounce', key=key, _external=True)
     revoke = url_for('revoke', key=key, _external=True)
 
-    return jsonify({'url': url, 'revoke': revoke})
+    return jsonify({'id': url,  'url': url, 'revoke': revoke})
 
 
 # ROUTE: GET /<key>
