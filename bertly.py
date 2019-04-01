@@ -144,7 +144,7 @@ def shorten():
     url = url_for('bounce', key=key, _external=True)
     revoke = url_for('revoke', key=key, _external=True)
 
-    return jsonify({'url': url, 'revoke': revoke})
+    return jsonify({'id': url,  'url': url, 'revoke': revoke})
 
 
 # ROUTE: GET /<key>
