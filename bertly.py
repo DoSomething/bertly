@@ -100,7 +100,7 @@ def jsonify(obj, status_code=200):
 
 def valid_url(url):
     parsed = urlparse(url)
-    return all([parsed.scheme, parsed.netloc, parsed.path])
+    return all([parsed.scheme, parsed.netloc])
 
 def require_api_key(view_function):
     """Decorator to require API key in header, passed as api_key_label"""
