@@ -9,18 +9,20 @@ Bertly! :link:
 
 ## Contributing
 
-Install [Node](https://nodejs.org/en/), [Python](https://www.python.org), and [VirtualEnv](https://virtualenv.pypa.io/en/stable/). You'll also need a local [Redis](https://redis.io) and [PostgreSQL](https://www.postgresql.org) database.
+Install [Node](https://nodejs.org/en/), [Python](https://www.python.org), and [Pipenv](https://docs.pipenv.org/en/latest/). You'll also need a local [Redis](https://redis.io) and [PostgreSQL](https://www.postgresql.org) database.
 
 ```sh
 # Create virtual environment:
-virtualenv venv
-source venv/bin/activate
+$ pipenv --two
 
 # Install dependencies:
-$ npm i && pip install -r requirements.txt
+$ npm i && pipenv install
 
 # Copy environment variables & edit w/ your machine's details:
 $ cp .env.example .env && vi .env
+
+# Load virtualenv with project dependencies:
+$ pipenv shell
 
 # Run database migrations to set up your PostgreSQL database:
 $ FLASK_APP=bertly.py flask db upgrade head
