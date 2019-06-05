@@ -22,13 +22,13 @@
   "devDependencies": {
     "chalk": "^2.4.2",
     "inquirer": "^3.2.3",
-    "js-yaml": "^3.13.0",
+    "js-yaml": "^3.13.1",
     "serverless-domain-manager": "^2.6.13",
     "serverless-log-forwarding": "^1.4.0",
     "serverless-python-requirements": "^2.5.0",
     "serverless-wsgi": "^1.7.2"
   },
   "dependencies": {
-    "serverless": "^1.40.0"
+    "serverless": "^1.44.1"
   }
 }
