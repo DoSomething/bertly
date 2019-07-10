@@ -200,7 +200,7 @@ resources:
       Type: AWS::RDS::DBInstance
       Properties:
         Engine: Postgres 
-        EngineVersion: '10.3'
+        EngineVersion: '10.9'
         DBName: 'bertly_clicks'
         AllocatedStorage: 100
         DBInstanceClass: db.t2.medium
