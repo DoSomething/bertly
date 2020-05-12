@@ -32,3 +32,29 @@ export function printRoute(method, path) {
   return `${colors[method](method)} ${prettyUrl}`;
 }
 
+/**
+ * Drop the given database table.
+ *
+ * @return {Promise}
+ */
+export async function dropTable(Model) {
+  if (process.env.NODE_ENV !== 'test') {
+    throw new Error('Cannot drop tables in production.');
+  }
+
+  const records = await Model.scan().exec();
+  return Promise.all(records.map(record => record.delete()));
+}
+
+/**
+ * Refresh the given document from the database.
+ *
+ * @param {Document} model
+ * @return {Document}
+ */
+export async function fresh(document) {
+  const Model = document.model;
+  const hashKey = Model.schema.getHashKey();
+
+  return Model.get(document[hashKey]);
+}

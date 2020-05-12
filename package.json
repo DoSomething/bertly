@@ -8,10 +8,11 @@
   },
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
     "dev": "npm run dev:dynamo & npm run dev:app",
     "dev:app": "nodemon --exec babel-node -r dotenv/config bootstrap/local.js",
     "dev:dynamo": "node bootstrap/local-dynamo.js",
+    "test": "jest --watch --runInBand",
+    "test:ci": "jest --ci --runInBand"
   },
   "babel": {
     "presets": [
