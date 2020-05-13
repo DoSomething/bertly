@@ -33,6 +33,23 @@ export function printRoute(method, path) {
 }
 
 /**
+ * Return a random alphanumeric character.
+ *
+ * @return {String}
+ */
+export function randomChar() {
+  const alphabet =
+    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
+  // This *isn't* cryptographically secure, but we don't need it to be.
+  // Math.random will give us a uniform distribution of characters
+  // once N is large enough. See: https://git.io/JfcNa
+  const offset = Math.floor(Math.random() * alphabet.length);
+
+  return alphabet[offset];
+}
+
+/**
  * Drop the given database table.
  *
  * @return {Promise}
