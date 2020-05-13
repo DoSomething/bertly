@@ -3,15 +3,44 @@
   "version": "1.0.0",
   "description": "Bitly, but for Bert.",
   "engines": {
-    "npm": "^5.6.0"
+    "node": "^12.0.0",
+    "npm": "^6.0.0"
   },
   "main": "index.js",
   "scripts": {
-    "start": "serverless wsgi serve",
-    "deploy:dev": "serverless deploy --aws-profile serverless-dev --stage dev",
-    "deploy:qa": "serverless deploy --aws-profile serverless-dev --stage qa",
-    "deploy:prod": "serverless deploy --aws-profile serverless-production --stage prod",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npm run dev:dynamo & npm run dev:app",
+    "dev:app": "nodemon --exec babel-node -r dotenv/config bootstrap/local.js",
+    "dev:dynamo": "node bootstrap/local-dynamo.js",
+    "test": "jest --watch --runInBand",
+    "test:ci": "jest --ci --runInBand"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": true
+          }
+        }
+      ]
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "globalSetup": "./jest.setup.js",
+    "setupFilesAfterEnv": [
+      "./jest.beforeAll.js"
+    ]
+  },
+  "prettier": {
+    "singleQuote": true,
+    "arrowParens": "avoid"
   },
   "repository": {
     "type": "git",
@@ -20,15 +49,32 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@babel/node": "^7.8.7",
+    "@babel/preset-env": "^7.9.6",
+    "@types/jest": "^25.2.1",
+    "babel-jest": "^26.0.1",
     "chalk": "^2.4.2",
-    "inquirer": "^3.2.3",
-    "js-yaml": "^3.13.1",
-    "serverless-domain-manager": "^2.6.13",
-    "serverless-log-forwarding": "^1.4.0",
-    "serverless-python-requirements": "^2.5.0",
-    "serverless-wsgi": "^1.7.2"
+    "husky": "^4.2.5",
+    "jest": "^26.0.1",
+    "local-dynamo": "^0.6.0",
+    "nodemon": "^2.0.3",
+    "prettier": "^2.0.5",
+    "pretty-quick": "^2.0.1",
+    "supertest": "^4.0.2"
   },
   "dependencies": {
-    "serverless": "^1.47.0"
+    "aws-sdk": "^2.671.0",
+    "body-parser": "^1.19.0",
+    "callsite-record": "^4.1.3",
+    "cli-table": "^0.3.1",
+    "dotenv": "^8.2.0",
+    "dynamoose": "^2.1.2",
+    "esm": "^3.2.25",
+    "express": "^4.17.1",
+    "express-async-handler": "^1.1.4",
+    "hashids": "^2.2.1",
+    "heroku-logger": "^0.3.3",
+    "lodash": "^4.17.15",
+    "stringify-object": "^3.3.0"
   }
 }
