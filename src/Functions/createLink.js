@@ -44,11 +44,11 @@ export default async function createLink(req, res) {
 
   // Find & return already shortened link, if one exists.
   const result = await Link.query({ url }).limit(1).exec();
-  const existing = result.count ? result[0] : null;
-  if (existing) {
-    info('Found matching shortlink', pick(existing, ['key', 'url']));
+  const existingLink = result.count ? result[0] : null;
+  if (existingLink) {
+    info('Found shortlink', pick(existingLink, ['key', 'url']));
 
-    return res.json(existing);
+    return res.json(existingLink);
   }
 
   // If we haven't yet shortened this URL, make new shortlink:
