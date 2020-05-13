@@ -37,8 +37,8 @@ const options = {
   create: ['development', 'test'].includes(process.env.NODE_ENV),
   waitForActive: ['development', 'test'].includes(process.env.NODE_ENV),
 
-  // TODO: This seems to be bugged <...>. We should see if we can figure out what's
-  // going wrong here, and fix if possible so we can run "update" migrations.
+  // TODO: This seems to be bugged <https://git.io/Jf401>. We should see if we
+  // can figure out what's going wrong here so we can run "update" migrations.
   update: false,
 
   // We use 'ON_DEMAND' capacity for this table since load is so variable.
