@@ -36,6 +36,9 @@
     "globalSetup": "./jest.setup.js",
     "setupFilesAfterEnv": [
       "./jest.beforeAll.js"
+    ],
+    "watchPathIgnorePatterns": [
+      "<rootDir>/bootstrap/"
     ]
   },
   "prettier": {
