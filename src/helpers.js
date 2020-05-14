@@ -1,6 +1,18 @@
 import chalk from 'chalk';
+import { StorageManager } from '@slynova/flydrive';
 
 import config from '../config';
+
+/**
+ * Get the FlyDrive filesystem disk.
+ *
+ * @return {FlyDrive}
+ */
+export function filesystem() {
+  const storage = new StorageManager(config('filesystem'));
+
+  return storage.disk();
+}
 
 /**
  * Format the given HTTP request for printing to the terminal.
