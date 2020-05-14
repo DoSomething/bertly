@@ -6,6 +6,7 @@ import auth from './Middleware/auth';
 import notFound from './Middleware/notFound';
 import visitLink from './Functions/visitLink';
 import createLink from './Functions/createLink';
+import destroyLink from './Functions/destroyLink';
 import inspectLink from './Functions/inspectLink';
 import errorHandler from './Middleware/errorHandler';
 
@@ -17,6 +18,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // Routes:
 app.post('/', [auth], asyncHandler(createLink));
+app.delete('/:link', [auth], asyncHandler(destroyLink));
 app.get('/:link/info', asyncHandler(inspectLink));
 app.get('/:link', asyncHandler(visitLink));
 
