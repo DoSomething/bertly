@@ -6,7 +6,7 @@ export default {
    *
    * @type {String}
    */
-  default: 'local',
+  default: process.env.STORAGE_DRIVER,
 
   /**
    * Configuration for FlyDrive drivers.
