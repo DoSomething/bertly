@@ -1,7 +1,7 @@
 /// <reference types="jest" />
 
-import { visit } from '../testing';
 import Link from '../Models/Link';
+import { visit } from '../testing';
 import { dropTable } from '../helpers';
 
 beforeEach(() => dropTable(Link));
