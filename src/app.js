@@ -2,7 +2,9 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import asyncHandler from 'express-async-handler';
 
+import auth from './Middleware/auth';
 import notFound from './Middleware/notFound';
+import createLink from './Functions/createLink';
 import errorHandler from './Middleware/errorHandler';
 
 const app = express();
@@ -12,7 +14,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // Routes:
-// ...
+app.post('/', [auth], asyncHandler(createLink));
 
 // Attach terminal "not found" & error handler
 // middleware for when things go awry:
