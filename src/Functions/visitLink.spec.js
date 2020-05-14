@@ -1,8 +1,7 @@
 /// <reference types="jest" />
 
 import Link from '../Models/Link';
-import { visit, expectJsonFile } from '../testing';
-import { dropTable } from '../helpers';
+import { visit, expectJsonFile, dropTable } from '../testing';
 
 jest.mock('uuid', () => {
   return { v4: () => 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' };

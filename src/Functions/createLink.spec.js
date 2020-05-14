@@ -1,8 +1,7 @@
 /// <reference types="jest" />
 
 import Link from '../Models/Link';
-import { postJson } from '../testing';
-import { dropTable } from '../helpers';
+import { postJson, dropTable } from '../testing';
 
 beforeEach(() => dropTable(Link));
 

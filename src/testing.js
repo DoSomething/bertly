@@ -76,3 +76,17 @@ export async function expectJsonFile(path, expected) {
 
   expect(json).toEqual(expect.objectContaining(expected));
 }
+
+/**
+ * Drop the given database table.
+ *
+ * @return {Promise}
+ */
+export async function dropTable(Model) {
+  if (process.env.NODE_ENV !== 'test') {
+    throw new Error('Cannot drop tables in production.');
+  }
+
+  const records = await Model.scan().exec();
+  return Promise.all(records.map(record => record.delete()));
+}
