@@ -17,7 +17,7 @@ describe('visitLink', () => {
   });
 
   test('It should handle missing links', async () => {
-    const response = await visit(`/xyz123/info`);
+    const response = await visit(`/xyz123`);
 
     expect(response.status).toBe(302);
     expect(response.headers.location).toBe('http://www.dosomething.org/404');
