@@ -5,6 +5,7 @@ import asyncHandler from 'express-async-handler';
 import auth from './Middleware/auth';
 import notFound from './Middleware/notFound';
 import createLink from './Functions/createLink';
+import destroyLink from './Functions/destroyLink';
 import errorHandler from './Middleware/errorHandler';
 
 const app = express();
@@ -15,6 +16,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // Routes:
 app.post('/', [auth], asyncHandler(createLink));
+app.delete('/:link', [auth], asyncHandler(destroyLink));
 
 // Attach terminal "not found" & error handler
 // middleware for when things go awry:
