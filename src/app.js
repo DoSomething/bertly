@@ -4,6 +4,7 @@ import asyncHandler from 'express-async-handler';
 
 import auth from './Middleware/auth';
 import notFound from './Middleware/notFound';
+import visitLink from './Functions/visitLink';
 import createLink from './Functions/createLink';
 import errorHandler from './Middleware/errorHandler';
 
@@ -15,6 +16,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // Routes:
 app.post('/', [auth], asyncHandler(createLink));
+app.get('/:link', asyncHandler(visitLink));
 
 // Attach terminal "not found" & error handler
 // middleware for when things go awry:
