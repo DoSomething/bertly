@@ -62,20 +62,6 @@ export function randomChar() {
 }
 
 /**
- * Drop the given database table.
- *
- * @return {Promise}
- */
-export async function dropTable(Model) {
-  if (process.env.NODE_ENV !== 'test') {
-    throw new Error('Cannot drop tables in production.');
-  }
-
-  const records = await Model.scan().exec();
-  return Promise.all(records.map(record => record.delete()));
-}
-
-/**
  * Refresh the given document from the database.
  *
  * @param {Document} model

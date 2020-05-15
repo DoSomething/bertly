@@ -36,6 +36,13 @@
     "globalSetup": "./jest.setup.js",
     "setupFilesAfterEnv": [
       "./jest.beforeAll.js"
+    ],
+    "watchPlugins": [
+      "jest-watch-typeahead/filename",
+      "jest-watch-typeahead/testname"
+    ],
+    "watchPathIgnorePatterns": [
+      "<rootDir>/bootstrap/"
     ]
   },
   "prettier": {
@@ -51,25 +58,26 @@
   "devDependencies": {
     "@babel/node": "^7.8.7",
     "@babel/preset-env": "^7.9.6",
-    "@types/jest": "^25.2.1",
+    "@types/jest": "^25.2.2",
     "babel-jest": "^26.0.1",
     "chalk": "^2.4.2",
     "husky": "^4.2.5",
     "jest": "^26.0.1",
+    "jest-watch-typeahead": "^0.6.0",
     "local-dynamo": "^0.6.0",
-    "nodemon": "^2.0.3",
+    "nodemon": "^2.0.4",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
     "supertest": "^4.0.2"
   },
   "dependencies": {
     "@slynova/flydrive": "^1.0.0-0",
-    "aws-sdk": "^2.671.0",
+    "aws-sdk": "^2.677.0",
     "body-parser": "^1.19.0",
     "callsite-record": "^4.1.3",
     "cli-table": "^0.3.1",
     "dotenv": "^8.2.0",
-    "dynamoose": "^2.1.2",
+    "dynamoose": "^2.2.0",
     "esm": "^3.2.25",
     "express": "^4.17.1",
     "express-async-handler": "^1.1.4",

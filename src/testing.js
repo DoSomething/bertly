@@ -1,5 +1,7 @@
 import http from 'http';
+import { resolve } from 'path';
 import { Test } from 'supertest';
+import { promises as fs } from 'fs';
 
 import app from './app';
 
@@ -61,4 +63,30 @@ export function deleteJson(url, body, headers = {}) {
   return request('delete', url)
     .set({ Accept: 'application/json', ...headers })
     .send(body);
+}
+
+/**
+ * Read a JSON file from our storage bucket.
+ *
+ * @param {String} path
+ */
+export async function expectJsonFile(path, expected) {
+  const file = await fs.readFile(resolve('bootstrap/storage/bucket', path));
+  const json = JSON.parse(file.toString('utf-8'));
+
+  expect(json).toEqual(expect.objectContaining(expected));
+}
+
+/**
+ * Drop the given database table.
+ *
+ * @return {Promise}
+ */
+export async function dropTable(Model) {
+  if (process.env.NODE_ENV !== 'test') {
+    throw new Error('Cannot drop tables in production.');
+  }
+
+  const records = await Model.scan().exec();
+  return Promise.all(records.map(record => record.delete()));
 }
