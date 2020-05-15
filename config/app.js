@@ -1,3 +1,7 @@
+import { assert } from '@sindresorhus/is';
+
+import { env } from '.';
+
 export default {
   /**
    * The application name (used to identify this particular
@@ -5,7 +9,7 @@ export default {
    *
    * @type {String}
    */
-  name: process.env.APP_NAME || 'bertly',
+  name: env('APP_NAME', assert.nonEmptyString),
 
   /**
    * Are we running in a production environment? This hide
@@ -14,7 +18,7 @@ export default {
    *
    * @type {Boolean}
    */
-  debug: process.env.NODE_ENV !== 'production',
+  debug: env('NODE_ENV') !== 'production',
 
   /**
    * The base application URL, used to redirect to canonical
@@ -22,19 +26,19 @@ export default {
    *
    * @type {String}
    */
-  url: process.env.APP_URL,
+  url: env('APP_URL', assert.urlString),
 
   /**
    * The port that traffic should be served from.
    *
    * @type {String}
    */
-  port: process.env.PORT || 3000,
+  port: env('PORT', assert.integer, 3000),
 
   /**
    * A secret used to "salt" our shortlinks.
    *
    * @type {String}
    */
-  secret: process.env.APP_SECRET,
+  secret: env('APP_SECRET', assert.nonEmptyString),
 };
