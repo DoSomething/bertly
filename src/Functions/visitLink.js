@@ -42,8 +42,10 @@ export default async function visitLink(req, res) {
     throw new NotFoundException('Not found.');
   }
 
-  // Increment this link's counter & log analytics info:
-  Link.update({ key: link.key }, { $ADD: { counter: 1 } });
+  // Update the link's "visits" counter & log for analytics:
+  // TODO: We should be able to finish this asynchronously after
+  // sending the response, but it causes Jest issues. <...>
+  await Link.update({ key: link.key }, { $ADD: { counter: 1 } });
   storeClickEvent(link, req);
 
   return res.redirect(link.url);
