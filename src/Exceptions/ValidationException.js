@@ -1,5 +1,5 @@
 /**
- * Thrown if the requested resource could not be found.
+ * Thrown if the request has an invalid format.
  */
 export default class ValidationException extends Error {
   // ...
