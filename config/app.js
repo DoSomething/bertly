@@ -35,7 +35,7 @@ export default {
    *
    * @type {String}
    */
-  port: env('PORT', assert.integer, 3000),
+  port: env('PORT', assert.integer),
 
   /**
    * A secret used to "salt" our shortlinks.

@@ -30,13 +30,8 @@ export function oneOf(...expectedValues) {
  * @param {Assert} validator
  * @param {*} default
  */
-export function env(name, validator = null, defaultValue = null) {
+export function env(name, validator = null) {
   let variable = process.env[name];
-
-  // If not set, use the default:
-  if (!variable) {
-    variable = defaultValue;
-  }
 
   // Optionally, we can pass a type validator (from '@sindresorhus/is') to
   // throw an error if an improperly formatted environment variable is set:
