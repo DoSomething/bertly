@@ -5,7 +5,7 @@ import * as Express from 'express';
 
 import config from '../../config';
 import Link from '../Models/Link';
-import { randomChar } from '../helpers';
+import { randomChar, validate } from '../helpers';
 
 /**
  * Crete a new shortlink key.
@@ -39,8 +39,9 @@ async function generateKey() {
  * @param {Express.Response} res
  */
 export default async function createLink(req, res) {
-  // TODO: Validate input and return a 422 for bad stuff.
-  const { url } = req.body;
+  const { url } = validate(req, v => ({
+    url: v.string().uri().required(),
+  }));
 
   // Find & return already shortened link, if one exists.
   const result = await Link.query({ url }).limit(1).exec();

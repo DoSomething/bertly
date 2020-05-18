@@ -44,6 +44,20 @@ describe('createLink', () => {
     expect(response.body).toHaveProperty('url', url);
   });
 
+  test('It should require a URL', async () => {
+    const request = { url: null };
+    const response = await postJson('/', request, authenticated);
+
+    expect(response.status).toBe(422);
+  });
+
+  test('It should validate the provided URL', async () => {
+    const request = { url: '19 W 21st Street' };
+    const response = await postJson('/', request, authenticated);
+
+    expect(response.status).toBe(422);
+  });
+
   test('It should require authentication', async () => {
     const response = await postJson('/', { url: 'https://www.drupal.org' });
 
