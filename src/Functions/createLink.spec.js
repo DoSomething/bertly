@@ -5,10 +5,12 @@ import { postJson, dropTable } from '../testing';
 
 beforeEach(() => dropTable(Link));
 
+const authenticated = { 'X-Bertly-API-Key': 'secret1' };
+
 describe('createLink', () => {
   test('It should create links', async () => {
     const url = 'https://www.example.com';
-    const response = await postJson('/', { url });
+    const response = await postJson('/', { url }, authenticated);
 
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty('key');
@@ -21,7 +23,7 @@ describe('createLink', () => {
       url: 'http://www.example.com',
     });
 
-    const response = await postJson('/', { url: link.url });
+    const response = await postJson('/', { url: link.url }, authenticated);
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('key', link.key);
@@ -35,10 +37,16 @@ describe('createLink', () => {
       '_campaign&utm_medium=sms&utm_campaign=sms_weekly_2020_05_11&user_' +
       'id=55be62d4469c64182b91992b&broadcast_id=6v1RJUUmrWN2Ode0EW6lH';
 
-    const response = await postJson('/', { url });
+    const response = await postJson('/', { url }, authenticated);
 
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty('key');
     expect(response.body).toHaveProperty('url', url);
+  });
+
+  test('It should require authentication', async () => {
+    const response = await postJson('/', { url: 'https://www.drupal.org' });
+
+    expect(response.status).toBe(401);
   });
 });

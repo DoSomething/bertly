@@ -4,6 +4,8 @@ import Link from '../Models/Link';
 import { fresh } from '../helpers';
 import { deleteJson, dropTable } from '../testing';
 
+const authenticated = { 'X-Bertly-API-Key': 'secret1' };
+
 beforeEach(() => dropTable(Link));
 
 describe('destroyLink', () => {
@@ -13,15 +15,21 @@ describe('destroyLink', () => {
       url: 'http://www.example.com',
     });
 
-    const response = await deleteJson(`/${link.key}`);
+    const response = await deleteJson(`/${link.key}`, null, authenticated);
 
     expect(response.status).toBe(200);
     expect(await fresh(link)).toBeUndefined();
   });
 
   test('It should handle missing links', async () => {
-    const response = await deleteJson(`/xyz123`);
+    const response = await deleteJson(`/xyz123`, null, authenticated);
 
     expect(response.status).toBe(404);
+  });
+
+  test('It should require authentication', async () => {
+    const response = await deleteJson(`/xyz123`);
+
+    expect(response.status).toBe(401);
   });
 });

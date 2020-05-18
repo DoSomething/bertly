@@ -9,7 +9,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "npm run dev:dynamo & npm run dev:app",
-    "dev:app": "nodemon --ignore bootstrap/storage --exec babel-node -r dotenv/config bootstrap/local.js",
+    "dev:app": "nodemon bootstrap/local.js",
     "dev:dynamo": "node bootstrap/local-dynamo.js",
     "test": "jest --watch --runInBand",
     "test:ci": "jest --ci --runInBand"
@@ -45,6 +45,18 @@
       "<rootDir>/bootstrap/"
     ]
   },
+  "nodemonConfig": {
+    "execMap": {
+      "js": "babel-node -r dotenv/config"
+    },
+    "watch": [
+      "src",
+      "config",
+      "package.json",
+      "package-lock.json",
+      ".env"
+    ]
+  },
   "prettier": {
     "singleQuote": true,
     "arrowParens": "avoid"
@@ -71,6 +83,7 @@
     "supertest": "^4.0.2"
   },
   "dependencies": {
+    "@sindresorhus/is": "^2.1.1",
     "@slynova/flydrive": "^1.0.0-0",
     "aws-sdk": "^2.677.0",
     "body-parser": "^1.19.0",
