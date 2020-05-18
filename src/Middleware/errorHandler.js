@@ -3,6 +3,7 @@ import stackTrace from 'callsite-record';
 
 import config from '../../config';
 import NotFoundException from '../Exceptions/NotFoundException';
+import ValidationException from '../Exceptions/ValidationException';
 
 /**
  * Display a "not found" error.
@@ -34,6 +35,9 @@ export default function errorHandler(err, req, res, next) {
   // Handle any named exceptions:
   if (err instanceof NotFoundException) {
     return missing(err, req, res);
+  }
+  if (err instanceof ValidationException) {
+    return res.status(422).json({ message: err.message });
   }
 
   // Otherwise, we're handling a fatal error:

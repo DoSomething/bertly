@@ -83,6 +83,7 @@
     "supertest": "^4.0.2"
   },
   "dependencies": {
+    "@hapi/joi": "^17.1.1",
     "@sindresorhus/is": "^2.1.1",
     "@slynova/flydrive": "^1.0.0-0",
     "aws-sdk": "^2.677.0",

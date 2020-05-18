@@ -1,7 +1,9 @@
 import chalk from 'chalk';
+import Joi, { Root } from '@hapi/joi';
 import { StorageManager } from '@slynova/flydrive';
 
 import config from '../config';
+import ValidationException from './Exceptions/ValidationException';
 
 /**
  * Get the FlyDrive filesystem disk.
@@ -72,4 +74,23 @@ export async function fresh(document) {
   const hashKey = Model.schema.getHashKey();
 
   return Model.get(document[hashKey]);
+}
+/**
+ * Validate the given request & return valid data.
+ *
+ * @param {*} req
+ * @param {(v: Root) => any} rules
+ * @returns {Object}
+ */
+export function validate(req, rules) {
+  // e.g. v => ({ url: v.string().uri() })
+  const schema = Joi.object(rules(Joi));
+
+  const { value, error } = schema.validate(req.body);
+
+  if (error) {
+    throw new ValidationException(error.message);
+  }
+
+  return value;
 }
