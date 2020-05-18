@@ -31,7 +31,16 @@ export function oneOf(...expectedValues) {
  * @param {*} default
  */
 export function env(name, validator = null) {
-  let variable = process.env[name];
+  let variable = process.env[name] || '';
+
+  // Parse strings to appropriate JavaScript types:
+  if (/^\d+$/.test(variable)) {
+    variable = parseInt(variable);
+  }
+
+  if (/true|false/i.test(variable)) {
+    variable = new Boolean(variable);
+  }
 
   // Optionally, we can pass a type validator (from '@sindresorhus/is') to
   // throw an error if an improperly formatted environment variable is set:
