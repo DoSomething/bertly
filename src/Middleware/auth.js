@@ -23,7 +23,7 @@ function getApiKey(req) {
  */
 export default async function authenticate(req, res, next) {
   if (getApiKey(req) !== config('auth.key')) {
-    return res.status(403).json({ message: 'Invalid API key.' });
+    return res.status(401).json({ message: 'Invalid API key.' });
   }
 
   next();

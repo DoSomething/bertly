@@ -30,6 +30,6 @@ describe('destroyLink', () => {
   test('It should require authentication', async () => {
     const response = await deleteJson(`/xyz123`);
 
-    expect(response.status).toBe(403);
+    expect(response.status).toBe(401);
   });
 });

@@ -47,6 +47,6 @@ describe('createLink', () => {
   test('It should require authentication', async () => {
     const response = await postJson('/', { url: 'https://www.drupal.org' });
 
-    expect(response.status).toBe(403);
+    expect(response.status).toBe(401);
   });
 });
