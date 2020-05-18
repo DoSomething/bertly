@@ -8,6 +8,22 @@ import database from './database';
 import filesystem from './filesystem';
 
 /**
+ * Creates a validator that ensures one of a provided set of values.
+ * @param {...*} expectedValues
+ */
+export function oneOf(...expectedValues) {
+  return given => {
+    if (expectedValues.some(expected => given == expected)) {
+      return true;
+    }
+
+    throw new TypeError(
+      `Expected one of [${expectedValues}], received \`${given}\`.`
+    );
+  };
+}
+
+/**
  * Load an environment variable.
  *
  * @param {String} name

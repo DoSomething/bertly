@@ -1,6 +1,8 @@
 import { assert } from '@sindresorhus/is';
 
-import { env } from '.';
+import { env, oneOf } from '.';
+
+const NODE_ENV = env('NODE_ENV', oneOf('development', 'test', 'production'));
 
 export default {
   /**
@@ -18,7 +20,7 @@ export default {
    *
    * @type {Boolean}
    */
-  debug: env('NODE_ENV') !== 'production',
+  debug: NODE_ENV !== 'production',
 
   /**
    * The base application URL, used to redirect to canonical
