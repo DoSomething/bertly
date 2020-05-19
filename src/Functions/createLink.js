@@ -5,7 +5,10 @@ import * as Express from 'express';
 
 import config from '../../config';
 import Link from '../Models/Link';
-import { randomChar, validate } from '../helpers';
+import { randomChar, validate, user, context } from '../helpers';
+import ValidationException from '../Exceptions/ValidationException';
+
+const ALLOWED_DOMAINS = config('domains');
 
 /**
  * Crete a new shortlink key.
@@ -43,11 +46,24 @@ export default async function createLink(req, res) {
     url: v.string().uri().required(),
   }));
 
+  // If a non-staffer is performing this action, are they allowed to
+  // shorten this particular URL? (Superusers can shorten anything.)
+  if (user(req) && user(req).hasRole('user')) {
+    const { host } = new URL(url);
+
+    if (!ALLOWED_DOMAINS.includes(host)) {
+      throw new ValidationException('Invalid domain. <https://git.io/JfzLI>');
+    }
+  }
+
   // Find & return already shortened link, if one exists.
   const result = await Link.query({ url }).limit(1).exec();
   const existingLink = result.count ? result[0] : null;
   if (existingLink) {
-    info('Found shortlink', pick(existingLink, ['key', 'url']));
+    info('Found existing shortlink', {
+      ...pick(existingLink, 'key', 'url'),
+      ...context(req),
+    });
 
     return res.json(existingLink);
   }
@@ -56,7 +72,10 @@ export default async function createLink(req, res) {
   const key = await generateKey();
   const link = await Link.create({ key, url });
 
-  info('Created new shortlink', pick(link, ['key', 'url']));
+  info('Created new shortlink', {
+    ...pick(link, 'key', 'url'),
+    ...context(req),
+  });
 
   return res.status(201).json(link);
 }

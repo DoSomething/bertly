@@ -1,16 +1,14 @@
 /// <reference types="jest" />
 
 import Link from '../Models/Link';
-import { postJson, dropTable } from '../testing';
+import { postJson, dropTable, withApiKey, withOAuthToken } from '../testing';
 
 beforeEach(() => dropTable(Link));
-
-const authenticated = { 'X-Bertly-API-Key': 'secret1' };
 
 describe('createLink', () => {
   test('It should create links', async () => {
     const url = 'https://www.example.com';
-    const response = await postJson('/', { url }, authenticated);
+    const response = await postJson('/', { url }, withApiKey());
 
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty('key');
@@ -23,7 +21,7 @@ describe('createLink', () => {
       url: 'http://www.example.com',
     });
 
-    const response = await postJson('/', { url: link.url }, authenticated);
+    const response = await postJson('/', { url: link.url }, withApiKey());
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('key', link.key);
@@ -37,7 +35,7 @@ describe('createLink', () => {
       '_campaign&utm_medium=sms&utm_campaign=sms_weekly_2020_05_11&user_' +
       'id=55be62d4469c64182b91992b&broadcast_id=6v1RJUUmrWN2Ode0EW6lH';
 
-    const response = await postJson('/', { url }, authenticated);
+    const response = await postJson('/', { url }, withApiKey());
 
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty('key');
@@ -46,16 +44,30 @@ describe('createLink', () => {
 
   test('It should require a URL', async () => {
     const request = { url: null };
-    const response = await postJson('/', request, authenticated);
+    const response = await postJson('/', request, withApiKey());
 
     expect(response.status).toBe(422);
   });
 
   test('It should validate the provided URL', async () => {
     const request = { url: '19 W 21st Street' };
-    const response = await postJson('/', request, authenticated);
+    const response = await postJson('/', request, withApiKey());
 
     expect(response.status).toBe(422);
+  });
+
+  test('It should restrict domains for non-staffers', async () => {
+    const request = { url: 'https://www.google.com' };
+    const response = await postJson('/', request, withOAuthToken('user'));
+
+    expect(response.status).toBe(422);
+  });
+
+  test('It should allow all domains for staffers', async () => {
+    const request = { url: 'https://www.google.com' };
+    const response = await postJson('/', request, withOAuthToken('staff'));
+
+    expect(response.status).toBe(201);
   });
 
   test('It should require authentication', async () => {

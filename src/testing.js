@@ -1,7 +1,8 @@
 import http from 'http';
 import { resolve } from 'path';
 import { Test } from 'supertest';
-import { promises as fs } from 'fs';
+import { sign } from 'jsonwebtoken';
+import { readFileSync, promises as fs } from 'fs';
 
 import app from './app';
 
@@ -89,4 +90,37 @@ export async function dropTable(Model) {
 
   const records = await Model.scan().exec();
   return Promise.all(records.map(record => record.delete()));
+}
+
+/**
+ * Return headers to make a request with a static API key.
+ *
+ * @return {Object}
+ */
+export function withApiKey() {
+  return { 'X-Bertly-API-Key': 'secret1' };
+}
+
+/**
+ * Return headers to make a request with an OAuth token.
+ *
+ * @param {String} role
+ * @param {String[]} scopes
+ * @return {Object}
+ */
+export function withOAuthToken(role = 'user', scopes = []) {
+  const privateKeyPath = resolve(__dirname, 'Auth/__mocks__/private.test.key');
+  const key = readFileSync(privateKeyPath, { encoding: 'utf-8' });
+
+  const options = {
+    algorithm: 'RS256',
+    issuer: process.env.OPENID_DISCOVERY_URL,
+    subject: '5554eac1a59dbf117e8b4567',
+    audience: 'jest',
+    expiresIn: '1h',
+  };
+
+  const jwt = sign({ role, scopes }, key, options);
+
+  return { Authorization: `Bearer ${jwt}` };
 }

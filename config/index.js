@@ -5,6 +5,7 @@ import { Assert } from '@sindresorhus/is';
 import app from './app';
 import auth from './auth';
 import database from './database';
+import domains from './domains';
 import filesystem from './filesystem';
 
 /**
@@ -71,7 +72,7 @@ export function env(name, validator = null) {
  * @param {mixed} defaultValue
  */
 export default (key, defaultValue = null) => {
-  const config = { app, auth, database, filesystem };
+  const config = { app, auth, database, domains, filesystem };
 
   return get(config, key, defaultValue);
 };
