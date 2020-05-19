@@ -16,4 +16,11 @@ export default {
    * @type {String}
    */
   key: env('BERTLY_API_KEY', assert.nonEmptyString),
+
+  /**
+   * The OAuth token issuer.
+   *
+   * @type {String}
+   */
+  issuer: env('OPENID_DISCOVERY_URL', assert.urlString),
 };

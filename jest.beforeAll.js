@@ -7,6 +7,9 @@ AWS.config.update({
   endpoint: 'http://localhost:45671',
 });
 
+// Configure base mocks:
+jest.mock('./src/Auth/issuer');
+
 // Configure test environment variables:
 process.env.APP_NAME = 'dosomething-bertly-test';
 process.env.APP_URL = 'https://localhost:3000';
@@ -16,3 +19,4 @@ process.env.PORT = 3000;
 process.env.STORAGE_DRIVER = 'local';
 process.env.BERTLY_API_KEY_NAME = 'X-BERTLY-API-KEY';
 process.env.BERTLY_API_KEY = 'secret1';
+process.env.OPENID_DISCOVERY_URL = 'https://localhost:5000'; // required, but unused. we mock these calls in tests.

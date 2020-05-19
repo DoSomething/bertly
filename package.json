@@ -98,6 +98,8 @@
     "hashids": "^2.2.1",
     "heroku-logger": "^0.3.3",
     "lodash": "^4.17.15",
+    "openid-client": "^3.15.1",
+    "p-memoize": "^4.0.0",
     "stringify-object": "^3.3.0",
     "uuid": "^8.0.0"
   }
