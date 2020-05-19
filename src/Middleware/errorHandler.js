@@ -4,6 +4,7 @@ import stackTrace from 'callsite-record';
 import config from '../../config';
 import NotFoundException from '../Exceptions/NotFoundException';
 import ValidationException from '../Exceptions/ValidationException';
+import { UnauthorizedError } from 'express-jwt';
 
 /**
  * Display a "not found" error.
@@ -38,6 +39,9 @@ export default function errorHandler(err, req, res, next) {
   }
   if (err instanceof ValidationException) {
     return res.status(422).json({ message: err.message });
+  }
+  if (err instanceof UnauthorizedError) {
+    return res.status(401).send('invalid token...');
   }
 
   // Otherwise, we're handling a fatal error:

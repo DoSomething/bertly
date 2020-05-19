@@ -95,6 +95,7 @@
     "esm": "^3.2.25",
     "express": "^4.17.1",
     "express-async-handler": "^1.1.4",
+    "express-jwt": "^5.3.3",
     "hashids": "^2.2.1",
     "heroku-logger": "^0.3.3",
     "lodash": "^4.17.15",
