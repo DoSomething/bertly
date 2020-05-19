@@ -75,6 +75,39 @@ export async function fresh(document) {
 
   return Model.get(document[hashKey]);
 }
+
+/**
+ * Returns a simplified object for the authorized user.
+ *
+ * @param {Express.Request} req
+ */
+export function user(req) {
+  if (!req.user) {
+    return null;
+  }
+
+  const { user } = req;
+
+  return {
+    id: user.sub,
+    hasRole: (...roles) => roles.includes(user.role),
+    hasScope: scope => user.scopes.includes(scope),
+  };
+}
+
+/**
+ * Seralize some request context for logging.
+ *
+ * @param {Express.Request} req
+ */
+export function context(req) {
+  if (!req.user) {
+    return {};
+  }
+
+  return { userId: req.user.sub, client: req.user.aud };
+}
+
 /**
  * Validate the given request & return valid data.
  *
