@@ -8,12 +8,7 @@ import Link from '../Models/Link';
 import { randomChar, validate, user, context } from '../helpers';
 import ValidationException from '../Exceptions/ValidationException';
 
-const ALLOWED_DOMAINS = [
-  'www.dosomething.org',
-  'qa.dosomething.org',
-  'dev.dosomething.org',
-  'vote.dosomething.org',
-];
+const ALLOWED_DOMAINS = config('domains');
 
 /**
  * Crete a new shortlink key.
@@ -57,7 +52,7 @@ export default async function createLink(req, res) {
     const { host } = new URL(url);
 
     if (!ALLOWED_DOMAINS.includes(host)) {
-      throw new ValidationException('Must be an approved domain. <...>');
+      throw new ValidationException('Invalid domain. <https://git.io/JfzLI>');
     }
   }
 
