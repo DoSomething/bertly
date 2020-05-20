@@ -4,7 +4,9 @@ import AWS from 'aws-sdk';
 // DynamoDB server for tests (see 'jest.setup.js'):
 AWS.config.update({
   region: 'us-east-1',
-  endpoint: 'http://localhost:45671',
+  // By default, DynamoDB Local uses port 8000. We swap to 45671 when running these
+  // tests locally so as not to conflict with Homestead or 'npm run dev'.
+  endpoint: process.env.CI ? 'http://localhost:8000' : 'http://localhost:45671',
 });
 
 // Configure base mocks:
