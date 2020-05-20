@@ -1,0 +1,41 @@
+# Javascript Node CircleCI 2.1 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+version: 2.1
+
+orbs:
+  lambda: dosomething/lambda@0.0.3
+
+jobs:
+  # Install dependencies, run tests, and compile for Lambda.
+  build:
+    docker:
+      - image: circleci/node:lts
+      - image: circleci/dynamodb
+    environment:
+      # Our mock DynamoDB server still requires credentials to be sent,
+      # even though it doesn't do anything with them. Hence...
+      AWS_ACCESS_KEY_ID: XXXXXXXXXXXXXXXXXXXX
+      AWS_SECRET_ACCESS_KEY: XXXXXXXXXXXXXAXXXXXXXXXXXXXXXXXXXXXXXXXX
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package-lock.json" }}
+            - v1-dependencies-
+      - run: npm install
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package-lock.json" }}
+      - run: npm run test:ci
+      - run: npm run compile
+      - lambda/store
+
+# Configure workflows & scheduled jobs:
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
