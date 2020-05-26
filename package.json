@@ -13,7 +13,7 @@
     "dev:dynamo": "node bootstrap/local-dynamo.js",
     "test": "jest --watch --runInBand",
     "test:ci": "jest --ci --runInBand",
-    "compile": "babel src -d lib && babel config -d lib/config"
+    "compile": "babel src -d build/src && babel config -d build/config"
   },
   "babel": {
     "presets": [
@@ -89,6 +89,7 @@
     "@sindresorhus/is": "^2.1.1",
     "@slynova/flydrive": "^1.0.0-0",
     "aws-sdk": "^2.677.0",
+    "aws-serverless-express": "^3.3.8",
     "body-parser": "^1.19.0",
     "callsite-record": "^4.1.3",
     "cli-table": "^0.3.1",
