@@ -39,3 +39,19 @@ workflows:
   build-deploy:
     jobs:
       - build
+      - lambda/deploy:
+          name: deploy-dev
+          app: dosomething-bertly-dev
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
+      - lambda/deploy:
+          name: deploy-qa
+          app: dosomething-bertly-qa
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
