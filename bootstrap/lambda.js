@@ -2,9 +2,12 @@
 
 // Enable X-Ray for DynamoDB if 'ENABLE_ENHANCED_XRAY' is true:
 if (process.env.ENABLE_ENHANCED_XRAY) {
-  var AWSXRay = require('aws-xray-sdk');
-  var dynamoose = require('dynamoose');
-  dynamoose.AWS = AWSXRay.captureAWS(require('aws-sdk'));
+  const AWSXRay = require('aws-xray-sdk');
+
+  // Instrument the AWS SDK & pass in to Dynamoose:
+  const AWS = AWSXRay.captureAWS(require('aws-sdk'));
+  const dynamoose = require('dynamoose');
+  dynamoose.aws.ddb.set(new AWS.DynamoDB());
 
   // Capture any HTTP requests made from app code:
   AWSXRay.captureHTTPsGlobal(require('http'));
