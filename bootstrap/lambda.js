@@ -8,6 +8,10 @@ if (process.env.ENABLE_ENHANCED_XRAY) {
 
   // Capture any HTTP requests made from app code:
   AWSXRay.captureHTTPsGlobal(require('http'));
+
+  // And just drop a note that we've registered all this:
+  var document = AWSXRay.getSegment();
+  document.addAnnotation('enhanced-xray', true);
 }
 
 // We use the 'aws-serverless-express' package to run a familiar Express.js
