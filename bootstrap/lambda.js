@@ -1,5 +1,12 @@
 'use strict';
 
+// Enable X-Ray for DynamoDB if 'ENABLE_ENHANCED_XRAY' is true:
+if (process.env.ENABLE_ENHANCED_XRAY) {
+  var AWSXRay = require('aws-xray-sdk');
+  var dynamoose = require('dynamoose');
+  dynamoose.AWS = AWSXRay.captureAWS(require('aws-sdk'));
+}
+
 // We use the 'aws-serverless-express' package to run a familiar Express.js
 // application within an AWS Lambda: https://git.io/Jfwbl
 const { createServer, proxy } = require('aws-serverless-express');

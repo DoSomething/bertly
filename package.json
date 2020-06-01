@@ -90,6 +90,7 @@
     "@slynova/flydrive": "^1.0.0-0",
     "aws-sdk": "^2.677.0",
     "aws-serverless-express": "^3.3.8",
+    "aws-xray-sdk": "^3.0.1",
     "body-parser": "^1.19.0",
     "callsite-record": "^4.1.3",
     "cli-table": "^0.3.1",
