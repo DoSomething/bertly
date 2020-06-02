@@ -29,6 +29,5 @@ const app = require('../build/src/app').default;
 // all requests that hit a single Lambda "instance".
 const server = createServer(app);
 
-exports.handler = (event, context) => {
-  proxy(server, event, context);
-};
+// Our handler function is called by Lambda for each request:
+exports.handler = (event, context) => proxy(server, event, context);
