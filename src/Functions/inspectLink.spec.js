@@ -17,7 +17,7 @@ describe('inspectLink', () => {
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('key', link.key);
     expect(response.body).toHaveProperty('url', link.url);
-    expect(response.body).toHaveProperty('counter');
+    expect(response.body).toHaveProperty('count');
   });
 
   test('It should handle missing links', async () => {

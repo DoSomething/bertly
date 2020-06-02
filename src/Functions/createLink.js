@@ -22,7 +22,7 @@ async function generateKey() {
   // keeps its own auto-incremented counter for making shortlinks, below:
   const partition = await Link.update(
     { key: `${randomChar()}${randomChar()}` },
-    { $ADD: { counter: 1 } }
+    { $ADD: { count: 1 } }
   );
 
   // We can then use hashids <https://hashids.org> to generate short
@@ -32,7 +32,7 @@ async function generateKey() {
   const id = new HashId(config('app.secret'), 5);
 
   // e.g. 'bSlejRe'
-  return `${partition.key}${id.encode(partition.counter)}`;
+  return `${partition.key}${id.encode(partition.count)}`;
 }
 
 /**

@@ -45,7 +45,7 @@ export default async function visitLink(req, res) {
   // Update the link's "visits" counter & log details for analytics:
   // TODO: We should be able to finish this asynchronously after sending
   // the response, but it causes Jest issues. <https://git.io/JfRa3>
-  await Link.update({ key: link.key }, { $ADD: { counter: 1 } });
+  await Link.update({ key: link.key }, { $ADD: { count: 1 } });
   storeClickEvent(link, req);
 
   return res.redirect(link.url);
