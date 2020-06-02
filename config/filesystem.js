@@ -23,9 +23,7 @@ export default {
     s3: {
       driver: 's3',
       region: 'us-east-1',
-      key: process.env.AWS_ACCESS_KEY,
-      secret: process.env.AWS_SECRET_KEY,
-      bucket: process.env.AWS_S3_BUCKET,
+      bucket: process.env.S3_BUCKET,
     },
   },
 };
