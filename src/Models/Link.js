@@ -18,7 +18,7 @@ const schema = new Schema(
         global: true,
       },
     },
-    counter: {
+    count: {
       type: Number,
       default: 0,
     },

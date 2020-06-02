@@ -5,6 +5,7 @@ import * as Express from 'express';
 
 import config from '../../config';
 import Link from '../Models/Link';
+import { transform } from '../Transformers/LinkTransfomer';
 import { randomChar, validate, user, context } from '../helpers';
 import ValidationException from '../Exceptions/ValidationException';
 
@@ -21,7 +22,7 @@ async function generateKey() {
   // keeps its own auto-incremented counter for making shortlinks, below:
   const partition = await Link.update(
     { key: `${randomChar()}${randomChar()}` },
-    { $ADD: { counter: 1 } }
+    { $ADD: { count: 1 } }
   );
 
   // We can then use hashids <https://hashids.org> to generate short
@@ -31,7 +32,7 @@ async function generateKey() {
   const id = new HashId(config('app.secret'), 5);
 
   // e.g. 'bSlejRe'
-  return `${partition.key}${id.encode(partition.counter)}`;
+  return `${partition.key}${id.encode(partition.count)}`;
 }
 
 /**
@@ -65,7 +66,7 @@ export default async function createLink(req, res) {
       ...context(req),
     });
 
-    return res.json(existingLink);
+    return res.json(transform(existingLink));
   }
 
   // If we haven't yet shortened this URL, make new shortlink:
@@ -77,5 +78,5 @@ export default async function createLink(req, res) {
     ...context(req),
   });
 
-  return res.status(201).json(link);
+  return res.status(201).json(transform(link));
 }

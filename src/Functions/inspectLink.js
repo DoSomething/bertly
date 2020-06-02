@@ -1,6 +1,7 @@
 import * as Express from 'express';
 
 import Link from '../Models/Link';
+import { transform } from '../Transformers/LinkTransfomer';
 import NotFoundException from '../Exceptions/NotFoundException';
 
 /**
@@ -17,5 +18,5 @@ export default async function inspectLink(req, res) {
     throw new NotFoundException('Not found');
   }
 
-  return res.json(link);
+  return res.json(transform(link));
 }
