@@ -5,6 +5,7 @@ import * as Express from 'express';
 
 import config from '../../config';
 import Link from '../Models/Link';
+import { transform } from '../Transformers/LinkTransfomer';
 import { randomChar, validate, user, context } from '../helpers';
 import ValidationException from '../Exceptions/ValidationException';
 
@@ -65,7 +66,7 @@ export default async function createLink(req, res) {
       ...context(req),
     });
 
-    return res.json(existingLink);
+    return res.json(transform(existingLink));
   }
 
   // If we haven't yet shortened this URL, make new shortlink:
@@ -77,5 +78,5 @@ export default async function createLink(req, res) {
     ...context(req),
   });
 
-  return res.status(201).json(link);
+  return res.status(201).json(transform(link));
 }
