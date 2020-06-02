@@ -10,9 +10,9 @@ import config from '../../config';
  */
 export const transform = link => ({
   key: link.key,
+  count: link.count,
   url: link.url,
   url_short: new URL(link.key, config('app.url')),
-  count: link.count,
   updatedAt: link.updatedAt.toISOString(),
   createdAt: link.createdAt.toISOString(),
 });
