@@ -22,7 +22,7 @@ if (process.env.ENABLE_ENHANCED_XRAY) {
 const { createServer, proxy } = require('aws-serverless-express');
 
 // We use the compiled JavaScript (from 'npm run compile') in production:
-const app = require('../build/src/app');
+const app = require('../build/src/app').default;
 
 // Finally, we create a server instance & use it to respond to API
 // Gateway events. This "server" instance is shared between
