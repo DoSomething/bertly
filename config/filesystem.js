@@ -23,7 +23,7 @@ export default {
     s3: {
       driver: 's3',
       region: 'us-east-1',
-      bucket: process.env.AWS_S3_BUCKET,
+      bucket: process.env.S3_BUCKET,
     },
   },
 };
