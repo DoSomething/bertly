@@ -13,7 +13,8 @@
     "dev:dynamo": "node bootstrap/local-dynamo.js",
     "test": "jest --watch --runInBand",
     "test:ci": "jest --ci --runInBand",
-    "compile": "babel src -d build/src && babel config -d build/config"
+    "compile": "babel src -d build/src && babel config -d build/config",
+    "script:migrate": "babel-node scripts/migrate.js -r dotenv/config"
   },
   "babel": {
     "presets": [
@@ -76,9 +77,11 @@
     "babel-jest": "^26.0.1",
     "chalk": "^2.4.2",
     "husky": "^4.2.5",
+    "ioredis": "^4.17.3",
     "jest": "^26.0.1",
     "jest-watch-typeahead": "^0.6.0",
     "local-dynamo": "^0.6.0",
+    "pg": "^8.2.1",
     "nodemon": "^2.0.4",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
