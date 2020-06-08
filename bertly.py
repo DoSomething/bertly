@@ -78,6 +78,10 @@ def get_key_for_url(url):
     if key is None:
         counter = redis_client.incr('bertly:counter', 1)
         key = short_url.encode_url(int(counter))
+        
+        # Log any new links we've created so we can backfill them
+        # into DynamoDB without iterating over all links again:
+        print('Shortening new link: {}'.format(key))
 
         hash = hashlib.sha256(url.encode()).hexdigest()
         redis_client.set('bertly:url:{}'.format(hash), key)
