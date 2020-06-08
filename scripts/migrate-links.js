@@ -4,6 +4,7 @@ import { promisify } from 'util';
 import { info } from 'heroku-logger';
 
 import Link from '../src/Models/Link';
+import { normalizeUrl } from '../src/helpers';
 
 // Configure storage connections for AWS, Redis, and RDS:
 AWS.config.update({ region: 'us-east-1' });
@@ -38,7 +39,10 @@ const keysMatching = async function* (pattern, initialCursor = '0') {
 
     // Write link record to DynamoDB:
     info('Migrating shortlink.', { key, url });
-    await Link.update({ key }, { url, createdAt: new Date() });
+    await Link.update(
+      { key },
+      { url: normalizeUrl(url), createdAt: new Date() }
+    );
   }
 
   console.log('Done!');

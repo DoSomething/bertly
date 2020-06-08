@@ -31,15 +31,25 @@ describe('createLink', () => {
   test('It can shorten very long URLs', async () => {
     const url =
       'https://www.dosomething.org/us/articles/13-ways-the-sports-world-' +
-      'is-stepping-up-during-the-coronavirus-pandemic?utm_source=content' +
-      '_campaign&utm_medium=sms&utm_campaign=sms_weekly_2020_05_11&user_' +
-      'id=55be62d4469c64182b91992b&broadcast_id=6v1RJUUmrWN2Ode0EW6lH';
+      'is-stepping-up-during-the-coronavirus-pandemic?broadcast_id=6v1RJ' +
+      'UUmrWN2Ode0EW6lH&user_id=55be62d4469c64182b91992b&utm_campaign=sm' +
+      's_weekly_2020_05_11&utm_medium=sms&utm_source=content_campaign';
 
     const response = await postJson('/', { url }, withApiKey());
 
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty('key');
     expect(response.body).toHaveProperty('url', url);
+  });
+
+  test('It normalizes URLs', async () => {
+    const url1 = 'https://www.example.com?a=hello&b=world';
+    const response1 = await postJson('/', { url: url1 }, withApiKey());
+
+    const url2 = 'https://www.example.com/?b=world&a=hello';
+    const response2 = await postJson('/', { url: url2 }, withApiKey());
+
+    expect(response1.key).toEqual(response2.key);
   });
 
   test('It should require a URL', async () => {
