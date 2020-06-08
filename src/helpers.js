@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import Joi, { Root } from '@hapi/joi';
+import normalize from 'normalize-url';
 import { StorageManager } from '@slynova/flydrive';
 
 import config from '../config';
@@ -126,4 +127,26 @@ export function validate(req, rules) {
   }
 
   return value;
+}
+
+/**
+ * Normalize the given URL.
+ *
+ * @param {String} url
+ * @returns {String}
+ */
+export function normalizeUrl(url) {
+  // Options for 'normalize-url' <https://git.io/JfDQP>
+  const options = {
+    // For consistency with our old normalization logic, we'll
+    // keep 'www.' on our URLs raher than stripping it.
+    stripWWW: false,
+    // We want URLs to resolve to the same shortlink regardless
+    // of how the query parameters (UTMs, etc) are ordered.
+    sortQueryParameters: true,
+    // We do not want to remove any UTM parameters!
+    removeQueryParameters: [],
+  };
+
+  return normalize(url, options);
 }

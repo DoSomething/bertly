@@ -6,7 +6,7 @@ import * as Express from 'express';
 import config from '../../config';
 import Link from '../Models/Link';
 import { transform } from '../Transformers/LinkTransfomer';
-import { randomChar, validate, user, context } from '../helpers';
+import { randomChar, validate, user, context, normalizeUrl } from '../helpers';
 import ValidationException from '../Exceptions/ValidationException';
 
 const ALLOWED_DOMAINS = config('domains');
@@ -43,9 +43,12 @@ async function generateKey() {
  * @param {Express.Response} res
  */
 export default async function createLink(req, res) {
-  const { url } = validate(req, v => ({
+  const body = validate(req, v => ({
     url: v.string().uri().required(),
   }));
+
+  // Normalize the URL before we query or save it:
+  const url = normalizeUrl(body.url);
 
   // If a non-staffer is performing this action, are they allowed to
   // shorten this particular URL? (Superusers can shorten anything.)
