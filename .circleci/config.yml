@@ -55,3 +55,19 @@ workflows:
           filters:
             branches:
               only: master
+      - hold:
+          type: approval
+          requires:
+            - deploy-dev
+            - deploy-qa
+          filters:
+            branches:
+              only: master
+      - lambda/deploy:
+          name: deploy-production
+          app: dosomething-bertly
+          requires:
+            - hold
+          filters:
+            branches:
+              only: master
