@@ -38,7 +38,7 @@ const keysMatching = async function* (pattern, initialCursor = '0') {
 
     // Write link record to DynamoDB:
     info('Migrating shortlink.', { key, url });
-    await Link.update({ key }, { url });
+    await Link.update({ key }, { url, createdAt: new Date() });
   }
 
   console.log('Done!');
