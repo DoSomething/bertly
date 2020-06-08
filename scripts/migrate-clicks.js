@@ -61,9 +61,10 @@ const allRows = async function* (table, page = 1, perPage = 1000) {
     }
 
     try {
+      // If this link exists, increment its click counter:
       await Link.update(
         { key: row.shortened },
-        { $ADD: { count: 1 }, createdAt: new Date() },
+        { $ADD: { count: 1 } },
         { condition: new Condition().filter('url').exists() }
       );
 
