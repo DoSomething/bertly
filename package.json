@@ -13,7 +13,9 @@
     "dev:dynamo": "node bootstrap/local-dynamo.js",
     "test": "jest --watch --runInBand",
     "test:ci": "jest --ci --runInBand",
-    "compile": "babel src -d build/src && babel config -d build/config"
+    "compile": "babel src -d build/src && babel config -d build/config",
+    "script:migrate-links": "babel-node scripts/migrate-links.js -r dotenv/config",
+    "script:migrate-clicks": "babel-node scripts/migrate-clicks.js -r dotenv/config"
   },
   "babel": {
     "presets": [
@@ -80,6 +82,7 @@
     "jest-watch-typeahead": "^0.6.0",
     "local-dynamo": "^0.6.0",
     "nodemon": "^2.0.4",
+    "pg": "^8.2.1",
     "prettier": "^2.0.5",
     "pretty-quick": "^2.0.1",
     "supertest": "^4.0.2"
@@ -106,6 +109,7 @@
     "lodash": "^4.17.15",
     "openid-client": "^3.15.1",
     "p-memoize": "^4.0.0",
+    "redis": "^3.0.2",
     "stringify-object": "^3.3.0",
     "uuid": "^8.0.0"
   }
