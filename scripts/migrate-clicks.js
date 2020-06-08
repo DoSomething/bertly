@@ -51,9 +51,9 @@ const allRows = async function* (table, page = 1, perPage = 1000) {
       user_agent: row.user_agent,
     };
 
-    // If we haven't migrated this click before (based on it's unique ID), then
-    // create a new click record & increment the link's counter (and yep, the
-    // 'exists' method returns an object with an 'exists' property...):
+    // If we've already migrated this click (based on it's unique ID), then
+    // we can skip migrating it again (and yep, the 'exists' method returns
+    // an object with an 'exists' property...):
     if (await filesystem().exists(`${clickId}.json`).exists) {
       info('Skipped click.', payload);
 
