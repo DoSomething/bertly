@@ -102,7 +102,7 @@
     "esm": "^3.2.25",
     "express": "^4.17.1",
     "express-async-handler": "^1.1.4",
-    "express-jwt": "^5.3.3",
+    "express-jwt": "^6.0.0",
     "hashids": "^2.2.1",
     "heroku-logger": "^0.3.3",
     "jsonwebtoken": "^8.5.1",
