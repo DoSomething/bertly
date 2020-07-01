@@ -49,5 +49,5 @@ export default async function authenticate(req, res, next) {
   const secret = await getPublicKey(issuer);
 
   // Validate the provided OAuth token:
-  jwt({ secret })(req, res, next);
+  jwt({ algorithms: ['RS256'], secret })(req, res, next);
 }
