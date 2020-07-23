@@ -1,7 +1,8 @@
 import AWS from 'aws-sdk';
 import redis from 'redis';
 import { promisify } from 'util';
-import { info } from 'heroku-logger';
+import { fromFile } from 'gen-readlines';
+import { info, error } from 'heroku-logger';
 
 import Link from '../src/Models/Link';
 import { normalizeUrl } from '../src/helpers';
@@ -32,18 +33,23 @@ const keysMatching = async function* (pattern, initialCursor = '0') {
 };
 
 (async () => {
-  // Iterate over our existing links and migrate them to Bertly 2.0's storage:
-  for await (const redisKey of keysMatching('bertly:key:*')) {
-    const key = redisKey.replace('bertly:key:', '');
-    const url = await redisGet(redisKey);
+  for (const line of fromFile(__dirname + '/keys.txt')) {
+    const key = line.toString();
+    const url = await redisGet(`bertly:key:${key}`);
 
-    // Write link record to DynamoDB:
-    info('Migrating shortlink.', { key, url });
-    await Link.update(
-      { key },
-      { url: normalizeUrl(url), createdAt: new Date() }
-    );
+    if (!url) {
+      error('Skipped missing shortlink.', { key });
+      return;
+    }
+
+    try {
+      const normalizedUrl = normalizeUrl(url);
+      const createdAt = new Date();
+
+      info('Migrating shortlink.', { key, url });
+      Link.update({ key }, { url: normalizedUrl, createdAt });
+    } catch (e) {
+      error('Could not migrate shortlink.', { key, url });
+    }
   }
-
-  console.log('Done!');
 })();
