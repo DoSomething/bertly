@@ -6,7 +6,7 @@ import Link from '../src/Models/Link';
 import { Client as PostgreSQL } from 'pg';
 import { filesystem } from '../src/helpers';
 
-// Configure storage connections for AWS, Redis, and RDS:
+// Configure storage connections for AWS and RDS:
 AWS.config.update({ region: 'us-east-1' });
 
 const sql = new PostgreSQL({
@@ -18,29 +18,33 @@ const sql = new PostgreSQL({
 });
 
 // Helper to cleanly paginate over all the rows in a SQL table:
-const allRows = async function* (table, page = 1, perPage = 1000) {
-  let offset = (page - 1) * perPage;
+const allRowsAfterDate = async function* (table, date, page = 1) {
+  const PER_PAGE = 1000;
 
   await sql.connect();
+
+  let result = null;
+  let offset = (page - 1) * PER_PAGE;
 
   do {
     info('Loading rows from PostgreSQL.', { offset });
 
-    const CLICKS_QUERY = `SELECT * FROM ${table} LIMIT $1 OFFSET $2`;
-    const result = await sql.query(CLICKS_QUERY, [perPage, offset]);
+    const CLICKS_QUERY = `SELECT * FROM ${table} WHERE click_time > $1
+                          ORDER BY click_time ASC LIMIT $2 OFFSET $3`;
+    result = await sql.query(CLICKS_QUERY, [date, PER_PAGE, offset]);
 
     for (const row of result.rows) {
       yield row;
     }
 
-    offset += limit;
+    offset += PER_PAGE;
   } while (result.rows.length !== 0);
 
   sql.end();
 };
 
 (async () => {
-  for await (const row of allRows('clicks')) {
+  for await (const row of allRowsAfterDate('clicks', '2020-06-07')) {
     const clickId = `${row.shortened}-${row.click_id}`;
 
     const payload = {
@@ -54,15 +58,16 @@ const allRows = async function* (table, page = 1, perPage = 1000) {
     // If we've already migrated this click (based on it's unique ID), then
     // we can skip migrating it again (and yep, the 'exists' method returns
     // an object with an 'exists' property...):
-    if (await filesystem().exists(`${clickId}.json`).exists) {
+    const { exists } = await filesystem().exists(`${clickId}.json`);
+    if (exists) {
       info('Skipped click.', payload);
 
       continue;
     }
 
     try {
-      // If this link exists, increment its click counter:
-      await Link.update(
+      // If this link exists, increment its click counter & store S3 record:
+      Link.update(
         { key: row.shortened },
         { $ADD: { count: 1 } },
         { condition: new Condition().filter('url').exists() }
@@ -72,7 +77,7 @@ const allRows = async function* (table, page = 1, perPage = 1000) {
 
       info('Migrated click.', payload);
     } catch (e) {
-      warn('Failed to migrate click.', payload);
+      warn('Failed to migrate click.', { error: e.message, ...payload });
     }
   }
 
