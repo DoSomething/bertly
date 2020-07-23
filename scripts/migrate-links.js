@@ -12,25 +12,6 @@ AWS.config.update({ region: 'us-east-1' });
 
 const redisClient = redis.createClient({ url: process.env.REDIS_URL });
 const redisGet = promisify(redisClient.get).bind(redisClient);
-const redisScan = promisify(redisClient.scan).bind(redisClient);
-
-// Helper to cleanly run a Redis SCAN & track counter as we go.
-// Adapted from: https://dev.to/eastpole/redis-async-generators-3ed
-const keysMatching = async function* (pattern, initialCursor = '0') {
-  let cursor = initialCursor;
-
-  do {
-    info('Scanning for links', { cursor });
-
-    const [newCursor, keys] = await redisScan(cursor, 'MATCH', pattern);
-
-    for (const key of keys) {
-      yield key;
-    }
-
-    cursor = newCursor;
-  } while (cursor !== '0');
-};
 
 (async () => {
   for (const line of fromFile(__dirname + '/keys.txt')) {
