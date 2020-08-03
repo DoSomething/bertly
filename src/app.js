@@ -20,6 +20,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.post('/', [auth], asyncHandler(createLink));
 app.delete('/:link', [auth], asyncHandler(destroyLink));
 app.get('/:link/info', asyncHandler(inspectLink));
+app.get('/:link/clicks', asyncHandler(inspectLink)); // TODO: Temporary!
 app.get('/:link', asyncHandler(visitLink));
 
 // Attach terminal "not found" & error handler
