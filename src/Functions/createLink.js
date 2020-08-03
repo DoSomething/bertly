@@ -69,7 +69,12 @@ export default async function createLink(req, res) {
       ...context(req),
     });
 
-    return res.json(transform(existingLink));
+    return res.json({
+      ...transform(existingLink),
+      // TODO: Update applications to read 'url_short' instead.
+      url: new URL(existingLink.key, config('app.url')),
+      url_long: existingLink.url,
+    });
   }
 
   // If we haven't yet shortened this URL, make new shortlink:
@@ -81,5 +86,10 @@ export default async function createLink(req, res) {
     ...context(req),
   });
 
-  return res.status(201).json(transform(link));
+  return res.status(201).json({
+    ...transform(link),
+    // TODO: Update applications to read 'url_short' instead.
+    url: new URL(link.key, config('app.url')),
+    url_long: link.url,
+  });
 }
