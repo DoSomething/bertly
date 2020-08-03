@@ -12,7 +12,8 @@ describe('createLink', () => {
 
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty('key');
-    expect(response.body).toHaveProperty('url', url);
+    expect(response.body).toHaveProperty('url');
+    expect(response.body).toHaveProperty('url_long', url);
   });
 
   test('It should not create duplicate links', async () => {
@@ -25,7 +26,7 @@ describe('createLink', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('key', link.key);
-    expect(response.body).toHaveProperty('url', link.url);
+    expect(response.body).toHaveProperty('url_long', link.url);
   });
 
   test('It can shorten very long URLs', async () => {
@@ -39,7 +40,7 @@ describe('createLink', () => {
 
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty('key');
-    expect(response.body).toHaveProperty('url', url);
+    expect(response.body).toHaveProperty('url_long', url);
   });
 
   test('It normalizes URLs', async () => {
