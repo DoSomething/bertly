@@ -1,6 +1,6 @@
 # Bertly [![code style](https://img.shields.io/badge/style-flake8-blue.svg)](http://flake8.pycqa.org/en/latest/)
 
-This is **Bertly**, a serverless link shortener. We use it to create shareable URLs, like this: [`dosome.click/wq544`](https://dosome.click/wq544). Bertly is built using [Serverless Framework](https://serverless.com), [Flask](http://flask.pocoo.org), and [`short_url`](https://pypi.org/project/short_url/). It runs on [AWS Lambda](https://aws.amazon.com/lambda/). We don't know where the name came from, but it sounds a bit familiar...
+This is **Bertly**, a serverless link shortener. We use it to create shareable URLs, like this: [`dosome.click/wq544`](https://dosome.click/wq544). Bertly is built using [Express](https://expressjs.com/), [Dynamoose](https://dynamoosejs.com), and [hashids](https://hashids.org/). It runs on [AWS Lambda](https://aws.amazon.com/lambda/). We don't know where the name came from, but it sounds a bit familiar...
 
 ## Getting Started
 
@@ -9,64 +9,38 @@ Bertly! :link:
 
 ## Contributing
 
-Install [Node](https://nodejs.org/en/), [Python](https://www.python.org), and [Pipenv](https://docs.pipenv.org/en/latest/). You'll also need a local [Redis](https://redis.io) and [PostgreSQL](https://www.postgresql.org) database.
+Install [Node 12.x](https://nodejs.org/en/) and clone this repository. Then, follow the setup instructions:
 
 ```sh
-# Create virtual environment:
-$ pipenv --two
-
 # Install dependencies:
-$ npm i && pipenv install
+$ npm install
 
 # Copy environment variables & edit w/ your machine's details:
 $ cp .env.example .env && vi .env
 
-# Load virtualenv with project dependencies:
-$ pipenv shell
-
-# Run database migrations to set up your PostgreSQL database:
-$ FLASK_APP=bertly.py flask db upgrade head
-
 # And finally, start your local dev server!
-$ npm start
+$ npm run dev
 ```
 
-We automatically lint all pull requests with [Stickler CI](https://stickler-ci.com).
+## Testing
+
+You can run functional and unit tests locally using [Jest](https://jestjs.io/):
+
+```sh
+npm test
+```
+
+Please write a test case when adding or changing a feature. Most steps you would take when manually testing your code can be automated, which makes it easier for yourself & others to review your code and ensures we don't accidentally break something later on!
 
 ## Deployments
 
-We deploy Bertly using [Serverless Framework](https://serverless.com) in [AWS](https://aws.amazon.com/), under separate development and production organizations.
+We deploy Bertly using [CircleCI](https://app.circleci.com/pipelines/github/DoSomething/bertly?branch=master).
 
-Before you start, make sure you've followed the "contributing" directions above & manually tested your code. Then, install [Docker](https://www.docker.com/docker-mac) and the [AWS CLI](https://aws.amazon.com/cli/), and configure it with our "dev" and "production" IAM roles (found in Lastpass):
+Anything that's merged to `master` is automatically deployed to `dev.dosome.click` and `qa.dosome.click`.
 
-```sh
-$ aws configure --profile serverless-dev
-AWS Access Key ID [None]: **************
-AWS Secret Access Key [None]: **************
-Default region name [None]: us-east-1
-Default output format [None]: text
+You can approve a build to be deployed to production by clicking the purple "on hold" step.
 
-$ aws configure --profile serverless-production
-AWS Access Key ID [None]: **************
-AWS Secret Access Key [None]: **************
-Default region name [None]: us-east-1
-Default output format [None]: text
-```
-
-Then, run either `npm run deploy:dev`, `npm run deploy:qa`, or `npm run deploy:prod` to deploy! (For more power, you can also install the [Serverless CLI](https://serverless.com/framework/docs/getting-started/) globally on your machine and run commands with `serverless` or `sls`).
-
-Migrations can be run by invoking the corresponding "migrate" Lambda function. For example:
-
-```sh
-# to run migrations on dev stage:
-$ aws lambda invoke --function-name bertly-dev-migrate --profile serverless-dev /dev/null
-
-# to run migrations on qa stage:
-$ aws lambda invoke --function-name bertly-qa-migrate --profile serverless-dev /dev/null
-
-# to run migrations on production stage:
-$ aws lambda invoke --function-name bertly-prod-migrate --profile serverless-production /dev/null
-```
+**Note:** Database migrations are [currently bugged](https://github.com/DoSomething/bertly/blob/abdaf05fecafedb0cdc3cb684e4b95ee90fa84c8/config/database.js#L21-L23), so you'll need to add or change fields manually.
 
 ## Security Vulnerabilities
 
