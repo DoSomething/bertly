@@ -13,9 +13,7 @@
     "dev:dynamo": "node bootstrap/local-dynamo.js",
     "test": "jest --watch --runInBand",
     "test:ci": "jest --ci --runInBand",
-    "compile": "babel src -d build/src && babel config -d build/config",
-    "script:migrate-links": "babel-node scripts/migrate-links.js -r dotenv/config",
-    "script:migrate-clicks": "babel-node scripts/migrate-clicks.js -r dotenv/config"
+    "compile": "babel src -d build/src && babel config -d build/config"
   },
   "babel": {
     "presets": [
