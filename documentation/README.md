@@ -81,8 +81,7 @@ curl "https://dosome.click/wq544/info"
 ```json
 {
   "key": "wq544",
-  "url": "https://dosome.click/wq544",
-  "url_long": "https://www.github.com/dosomething/bertly",
+  "url": "https://www.github.com/dosomething/bertly",
   "url_short": "https://dosome.click/wq544",
   "updated_at": "2020-08-03T19:36:43.695Z",
   "created_at": "2020-06-09T18:13:08.663Z"
