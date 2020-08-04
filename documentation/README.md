@@ -19,7 +19,7 @@ Creating or revoking short-links requires an [access token](https://github.com/D
 POST /
 ```
 
-Given a URL, return a JSON object containing the shortened URL, and a token to use when revoking the shortened URL. If the same URL is provided multiple times, the same short-link will be returned.
+Given a URL, return a JSON object containing the shortened URL, and a token to use when revoking the shortened URL. If the same URL is provided multiple times, the same short-link will be returned. If this link is created by a non-staff user, it's restricted to a [list of safe domains](https://github.com/DoSomething/bertly/blob/master/config/domains.js).
 
 The request body is accepted as either `application/json` or `application/x-www-form-urlencoded`.
 
