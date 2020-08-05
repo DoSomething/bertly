@@ -13,6 +13,6 @@ export const transform = link => ({
   count: link.count,
   url: link.url,
   url_short: new URL(link.key, config('app.url')),
-  updatedAt: link.updatedAt.toISOString(),
-  createdAt: link.createdAt.toISOString(),
+  updated_at: link.updatedAt.toISOString(),
+  created_at: link.createdAt.toISOString(),
 });
