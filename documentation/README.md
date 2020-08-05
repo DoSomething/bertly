@@ -81,6 +81,7 @@ curl "https://dosome.click/wq544/info"
 ```json
 {
   "key": "wq544",
+  "count": 42,
   "url": "https://www.github.com/dosomething/bertly",
   "url_short": "https://dosome.click/wq544",
   "updated_at": "2020-08-03T19:36:43.695Z",
