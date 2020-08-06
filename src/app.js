@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express from 'express';
 import bodyParser from 'body-parser';
 import asyncHandler from 'express-async-handler';
@@ -11,6 +12,9 @@ import inspectLink from './Functions/inspectLink';
 import errorHandler from './Middleware/errorHandler';
 
 const app = express();
+
+// Allow cross-origin requests:
+app.use(cors());
 
 // We'll happily parse either JSON or URL-encoded bodies:
 app.use(bodyParser.json());
