@@ -10,4 +10,5 @@ export default [
   'qa.dosomething.org',
   'dev.dosomething.org',
   'vote.dosomething.org',
+  'phoenix.test',
 ];
