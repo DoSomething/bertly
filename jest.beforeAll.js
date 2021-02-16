@@ -1,8 +1,8 @@
-import AWS from 'aws-sdk';
+import * as dynamoose from 'dynamoose';
 
 // Configure the AWS SDK to use our local in-memory
 // DynamoDB server for tests (see 'jest.setup.js'):
-AWS.config.update({
+dynamoose.aws.sdk.config.update({
   region: 'us-east-1',
   // By default, DynamoDB Local uses port 8000. We swap to 45671 when running these
   // tests locally so as not to conflict with Homestead or 'npm run dev'.

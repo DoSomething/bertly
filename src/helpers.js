@@ -71,10 +71,14 @@ export function randomChar() {
  * @return {Document}
  */
 export async function fresh(document) {
-  const Model = document.model;
-  const hashKey = Model.schema.getHashKey();
+  const model = document.model;
 
-  return Model.get(document[hashKey]);
+  // Figure out what schema we use for this document:
+  const schema = await model.schemaForObject(document);
+  const hashKey = schema.getHashKey();
+
+  // Then, reload document from the database by its key:
+  return model.get(document[hashKey]);
 }
 
 /**
