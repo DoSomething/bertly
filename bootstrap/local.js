@@ -1,4 +1,3 @@
-import AWS from 'aws-sdk';
 import chalk from 'chalk';
 import * as dynamoose from 'dynamoose';
 
@@ -8,7 +7,10 @@ import { printRoute } from '../src/helpers';
 import DynamoLogger from '../src/Logging/DynamoLogger';
 
 // Configure to use DynamoDB Local in development:
-AWS.config.update({ region: 'us-east-1', endpoint: 'http://localhost:45670' });
+dynamoose.aws.sdk.config.update({
+  region: 'us-east-1',
+  endpoint: 'http://localhost:45670',
+});
 dynamoose.logger.providers.set(new DynamoLogger());
 
 // We run a simple Express server to run our functions
