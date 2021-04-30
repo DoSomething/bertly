@@ -110,7 +110,7 @@
     "normalize-url": "^5.0.0",
     "openid-client": "^3.15.1",
     "p-memoize": "^4.0.0",
-    "redis": "^3.0.2",
+    "redis": "^3.1.1",
     "stringify-object": "^3.3.0",
     "uuid": "^8.0.0"
   }
