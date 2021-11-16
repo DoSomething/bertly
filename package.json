@@ -89,7 +89,7 @@
     "@hapi/joi": "^17.1.1",
     "@sindresorhus/is": "^2.1.1",
     "@slynova/flydrive": "^1.0.0-0",
-    "aws-sdk": "^2.677.0",
+    "aws-sdk": "^2.814.0",
     "aws-serverless-express": "^3.3.8",
     "aws-xray-sdk": "^3.0.1",
     "body-parser": "^1.19.0",
