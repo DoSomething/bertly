@@ -99,7 +99,7 @@
     "dotenv": "^8.2.0",
     "dynamoose": "^2.7.0",
     "esm": "^3.2.25",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-async-handler": "^1.1.4",
     "express-jwt": "^6.0.0",
     "gen-readlines": "^0.2.0",
